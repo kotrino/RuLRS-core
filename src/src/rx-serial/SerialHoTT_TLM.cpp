@@ -239,7 +239,7 @@ void SerialHoTT_TLM::sendCRSFvario(uint32_t now)
     // prepare CRSF telemetry packet
     CRSF_MK_FRAME_T(crsf_sensor_baro_vario_t)
     crsfBaro = {0};
-    crsfBaro.p.altitude = htobe16(getHoTTaltitude() * 10 + 5000); // Hott 500 = 0m, ELRS 10000 = 0.0m
+    crsfBaro.p.altitude = htobe16(getHoTTaltitude() * 10 + 5000); // Hott 500 = 0m, RULRS 10000 = 0.0m
     crsfBaro.p.verticalspd = htobe16(getHoTTvv() - 30000);
     CRSF::SetHeaderAndCrc((uint8_t *)&crsfBaro, CRSF_FRAMETYPE_BARO_ALTITUDE, CRSF_FRAME_SIZE(sizeof(crsf_sensor_baro_vario_t)), CRSF_ADDRESS_CRSF_TRANSMITTER);
 
@@ -261,7 +261,7 @@ void SerialHoTT_TLM::sendCRSFgps(uint32_t now)
     crsfGPS = {0};
     crsfGPS.p.latitude = htobe32(getHoTTlatitude());
     crsfGPS.p.longitude = htobe32(getHoTTlongitude());
-    crsfGPS.p.groundspeed = htobe16(getHoTTgroundspeed() * 10); // Hott 1 = 1 km/h, ELRS 1 = 0.1km/h
+    crsfGPS.p.groundspeed = htobe16(getHoTTgroundspeed() * 10); // Hott 1 = 1 km/h, RULRS 1 = 0.1km/h
     crsfGPS.p.gps_heading = htobe16(getHoTTheading() * 100);
     crsfGPS.p.altitude = htobe16(getHoTTMSLaltitude() + 1000); // HoTT 1 = 1m, CRSF: 0m = 1000
     crsfGPS.p.satellites_in_use = getHoTTsatellites();

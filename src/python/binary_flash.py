@@ -4,7 +4,7 @@ from enum import Enum
 import shutil
 import os
 
-from elrs_helpers import ElrsUploadResult
+from rulrs_helpers import ElrsUploadResult
 import BFinitPassthrough
 import ETXinitPassthrough
 import serials_find
@@ -138,26 +138,26 @@ def upload(options: FirmwareOptions, args):
             elif args.flash == UploadMethod.uart:
                 return upload_esp8266_uart(args)
             elif args.flash == UploadMethod.wifi:
-                return upload_wifi(args, options, ['elrs_rx', 'elrs_rx.local'])
+                return upload_wifi(args, options, ['rulrs_rx', 'rulrs_rx.local'])
         elif options.mcuType == MCUType.ESP32:
             if args.flash == UploadMethod.betaflight:
                 return upload_esp32_bf(args, options)
             elif args.flash == UploadMethod.uart:
                 return upload_esp32_uart(args)
             elif args.flash == UploadMethod.wifi:
-                return upload_wifi(args, options, ['elrs_rx', 'elrs_rx.local'])
+                return upload_wifi(args, options, ['rulrs_rx', 'rulrs_rx.local'])
     else:
         if options.mcuType == MCUType.ESP8266:
             if args.flash == UploadMethod.uart:
                 return upload_esp8266_uart(args)
             elif args.flash == UploadMethod.wifi:
-                return upload_wifi(args, options, ['elrs_tx', 'elrs_tx.local'])
+                return upload_wifi(args, options, ['rulrs_tx', 'rulrs_tx.local'])
         elif options.mcuType == MCUType.ESP32:
             if args.flash == UploadMethod.edgetx:
                 return upload_esp32_etx(args)
             elif args.flash == UploadMethod.uart:
                 return upload_esp32_uart(args)
             elif args.flash == UploadMethod.wifi:
-                return upload_wifi(args, options, ['elrs_tx', 'elrs_tx.local'])
+                return upload_wifi(args, options, ['rulrs_tx', 'rulrs_tx.local'])
     print("Invalid upload method for firmware")
     return ElrsUploadResult.ErrorGeneral

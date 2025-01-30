@@ -277,7 +277,7 @@ def main():
             args.platform = config.get('platform')
             return binary_flash.upload(options, args)
         elif 'upload_methods' in config and 'stock' in config['upload_methods']:
-            shutil.copy(args.file.name, 'firmware.elrs')
+            shutil.copy(args.file.name, 'firmware.rulrs')
     return 0
 
 if __name__ == '__main__':

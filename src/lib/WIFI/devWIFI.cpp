@@ -157,7 +157,7 @@ static struct {
 } files[] = {
   {"/scan.js", "text/javascript", (uint8_t *)SCAN_JS, sizeof(SCAN_JS)},
   {"/mui.js", "text/javascript", (uint8_t *)MUI_JS, sizeof(MUI_JS)},
-  {"/elrs.css", "text/css", (uint8_t *)ELRS_CSS, sizeof(ELRS_CSS)},
+  {"/rulrs.css", "text/css", (uint8_t *)RULRS_CSS, sizeof(RULRS_CSS)},
   {"/hardware.html", "text/html", (uint8_t *)HARDWARE_HTML, sizeof(HARDWARE_HTML)},
   {"/hardware.js", "text/javascript", (uint8_t *)HARDWARE_JS, sizeof(HARDWARE_JS)},
   {"/cw.html", "text/html", (uint8_t *)CW_HTML, sizeof(CW_HTML)},
@@ -991,7 +991,7 @@ static void startMDNS()
     // We have to do it differently on ESP8266 as setInstanceName has the side-effect of chainging the hostname!
     MDNS.setInstanceName(wifi_hostname);
     MDNSResponder::hMDNSService service = MDNS.addService(instance.c_str(), "http", "tcp", 80);
-    MDNS.addServiceTxt(service, "vendor", "elrs");
+    MDNS.addServiceTxt(service, "vendor", "rulrs");
     MDNS.addServiceTxt(service, "target", (const char *)&target_name[4]);
     MDNS.addServiceTxt(service, "device", (const char *)device_name);
     MDNS.addServiceTxt(service, "product", (const char *)product_name);
@@ -1010,7 +1010,7 @@ static void startMDNS()
   #else
     MDNS.setInstanceName(instance);
     MDNS.addService("http", "tcp", 80);
-    MDNS.addServiceTxt("http", "tcp", "vendor", "elrs");
+    MDNS.addServiceTxt("http", "tcp", "vendor", "rulrs");
     MDNS.addServiceTxt("http", "tcp", "target", (const char *)&target_name[4]);
     MDNS.addServiceTxt("http", "tcp", "device", (const char *)device_name);
     MDNS.addServiceTxt("http", "tcp", "product", (const char *)product_name);
@@ -1024,9 +1024,9 @@ static void startMDNS()
   #endif
 
   #if defined(TARGET_TX) && defined(PLATFORM_ESP32)
-    MDNS.addService("elrs", "udp", JOYSTICK_PORT);
-    MDNS.addServiceTxt("elrs", "udp", "device", (const char *)device_name);
-    MDNS.addServiceTxt("elrs", "udp", "version", String(JOYSTICK_VERSION).c_str());
+    MDNS.addService("rulrs", "udp", JOYSTICK_PORT);
+    MDNS.addServiceTxt("rulrs", "udp", "device", (const char *)device_name);
+    MDNS.addServiceTxt("rulrs", "udp", "version", String(JOYSTICK_VERSION).c_str());
   #endif
 }
 
@@ -1061,7 +1061,7 @@ static void startServices()
   }
 
   server.on("/", WebUpdateHandleRoot);
-  server.on("/elrs.css", WebUpdateSendContent);
+  server.on("/rulrs.css", WebUpdateSendContent);
   server.on("/mui.js", WebUpdateSendContent);
   server.on("/scan.js", WebUpdateSendContent);
   server.on("/networks.json", WebUpdateSendNetworks);

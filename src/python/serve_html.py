@@ -75,7 +75,7 @@ config = {
             "serial-protocol": 3,
             "sbus-failsafe": 0,
             "product_name": "Generic ESP8285 + 5xPWM 2.4Ghz RX",
-            "lua_name": "ELRS+PWM 2400RX",
+            "lua_name": "RULRS+PWM 2400RX",
             "reg_domain": "ISM2G4",
             "button-actions": [
                 {
@@ -146,10 +146,10 @@ def index():
     response.content_type = 'text/html; charset=latin9'
     return apply_template('index.html')
 
-@route('/elrs.css')
-def elrs():
+@route('/rulrs.css')
+def rulrs():
     response.content_type = 'text/css; charset=latin9'
-    return apply_template('elrs.css')
+    return apply_template('rulrs.css')
 
 @route('/scan.js')
 def scan():
@@ -255,7 +255,7 @@ def import_config():
 @route('/sethome', method='POST')
 def options():
     response.content_type = 'application/json; charset=latin9'
-    return "Connecting to network '" + request.forms.get('network') + "', connect to http://elrs_tx.local from a browser on that network"
+    return "Connecting to network '" + request.forms.get('network') + "', connect to http://rulrs_tx.local from a browser on that network"
 
 @route('/networks.json')
 def mode():

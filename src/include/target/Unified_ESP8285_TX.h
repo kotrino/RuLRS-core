@@ -35,7 +35,7 @@
 #define MaxPower (PowerLevels_e)hardware_int(HARDWARE_power_max)
 #define DefaultPower (PowerLevels_e)hardware_int(HARDWARE_power_default)
 
-#define POWER_OUTPUT_DACWRITE false // Not supported on 8285 based hardware
+#define POWER_OUTPUT_DACWRITE false // Не поддерживается на оборудовании на базе 8285
 #define POWER_OUTPUT_VALUES hardware_i16_array(HARDWARE_power_values)
 #define POWER_OUTPUT_VALUES_COUNT hardware_int(HARDWARE_power_values_count)
 #define POWER_OUTPUT_VALUES2 hardware_i16_array(HARDWARE_power_values)
@@ -63,7 +63,7 @@
 #define WS2812_BOOT_LEDS hardware_i16_array(HARDWARE_ledidx_rgb_boot)
 #define WS2812_BOOT_LEDS_COUNT hardware_int(HARDWARE_ledidx_rgb_boot_count)
 
-// Unsupported TX features for an 8285 TX
+// Неподдерживаемые функции TX для 8285 TX
 #define OPT_HAS_THERMAL false
 #define GPIO_PIN_FAN_EN UNDEF_PIN
 #define GPIO_PIN_FAN_PWM UNDEF_PIN

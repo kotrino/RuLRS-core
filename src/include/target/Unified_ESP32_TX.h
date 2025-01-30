@@ -116,11 +116,11 @@
 #define GPIO_PIN_FAN_SPEEDS_COUNT hardware_int(HARDWARE_misc_fan_speeds_count)
 
 #define OPT_HAS_GSENSOR_STK8xxx hardware_flag(HARDWARE_gsensor_stk8xxx)
-#define OPT_HAS_GSENSOR OPT_HAS_GSENSOR_STK8xxx // If any of the sensors are present
+#define OPT_HAS_GSENSOR OPT_HAS_GSENSOR_STK8xxx // Если присутствует любой из датчиков
 #define GPIO_PIN_GSENSOR_INT hardware_pin(HARDWARE_misc_gsensor_int)
 
 #define OPT_HAS_THERMAL_LM75A hardware_flag(HARDWARE_thermal_lm75a)
-#define OPT_HAS_THERMAL OPT_HAS_THERMAL_LM75A // If any of the sensors are present
+#define OPT_HAS_THERMAL OPT_HAS_THERMAL_LM75A // Если присутствует любой из датчиков
 
 #define OPT_HAS_VTX_SPI false
 #define GPIO_PIN_SPI_VTX_NSS UNDEF_PIN

@@ -6,10 +6,10 @@
 #include "median.h"
 #include "logging.h"
 
-// Sample 5x samples over 500ms (unless SlowUpdate)
+// Выборка 5 значений за 500мс (если не включен SlowUpdate)
 #define VBAT_SMOOTH_CNT         5
 #if defined(DEBUG_VBAT_ADC)
-#define VBAT_SAMPLE_INTERVAL    20U // faster updates in debug mode
+#define VBAT_SAMPLE_INTERVAL    20U // более частые обновления в режиме отладки
 #else
 #define VBAT_SAMPLE_INTERVAL    100U
 #endif
@@ -23,11 +23,11 @@ static uint8_t vbatUpdateScale;
 static esp_adc_cal_characteristics_t *vbatAdcUnitCharacterics;
 #endif
 
-/* Shameful externs */
+/* Внешние зависимости */
 extern Telemetry telemetry;
 
 /**
- * @brief: Enable SlowUpdate mode to reduce the frequency Vbat telemetry is sent
+ * @brief: Включить режим SlowUpdate для уменьшения частоты отправки телеметрии Vbat
  ***/
 void Vbat_enableSlowUpdate(bool enable)
 {
@@ -48,7 +48,7 @@ static int start()
     int atten = hardware_int(HARDWARE_vbat_atten);
     if (atten != -1)
     {
-        // if the configured value is higher than the max item (11dB, it indicates to use cal_characterize)
+        // если настроенное значение выше максимального элемента (11dB, это указывает на использование cal_characterize)
         bool useCal = atten > ADC_11db;
         if (useCal)
         {
@@ -75,16 +75,16 @@ static void reportVbat()
 #endif
 
     int32_t vbat;
-    // For negative offsets, anything between abs(OFFSET) and 0 is considered 0
+    // Для отрицательных смещений, любое значение между abs(OFFSET) и 0 считается как 0
     if (ANALOG_VBAT_OFFSET < 0 && adc <= -ANALOG_VBAT_OFFSET)
         vbat = 0;
     else
         vbat = ((int32_t)adc - ANALOG_VBAT_OFFSET) * 100 / ANALOG_VBAT_SCALE;
 
     CRSF_MK_FRAME_T(crsf_sensor_battery_t) crsfbatt = { 0 };
-    // Values are MSB first (BigEndian)
+    // Значения в формате MSB first (BigEndian)
     crsfbatt.p.voltage = htobe16((uint16_t)vbat);
-    // No sensors for current, capacity, or remaining available
+    // Нет датчиков для тока, емкости или оставшегося заряда
 
     CRSF::SetHeaderAndCrc((uint8_t *)&crsfbatt, CRSF_FRAMETYPE_BATTERY_SENSOR, CRSF_FRAME_SIZE(sizeof(crsf_sensor_battery_t)), CRSF_ADDRESS_CRSF_TRANSMITTER);
     telemetry.AppendTelemetryPackage((uint8_t *)&crsfbatt);
@@ -99,8 +99,8 @@ static int timeout()
 
     uint32_t adc = analogRead(GPIO_ANALOG_VBAT);
 #if defined(PLATFORM_ESP32) && defined(DEBUG_VBAT_ADC)
-    // When doing DEBUG_VBAT_ADC, every value is adjusted (for logging)
-    // in normal mode only the final value is adjusted to save CPU cycles
+    // При DEBUG_VBAT_ADC каждое значение корректируется (для логирования)
+    // в обычном режиме корректируется только финальное значение для экономии CPU
     if (vbatAdcUnitCharacterics)
         adc = esp_adc_cal_raw_to_voltage(adc, vbatAdcUnitCharacterics);
     DBGLN("$ADC,%u", adc);

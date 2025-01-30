@@ -1,5 +1,5 @@
 {
-    "comment": "esp8285 variant for ExpressLRS that uses variant=esp8285 instead of variant=generic",
+    "comment": "esp8285 variant for RuLRS that uses variant=esp8285 instead of variant=generic",
     "build": {
       "arduino": {
         "ldscript": "eagle.flash.1m256.ld"

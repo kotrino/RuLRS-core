@@ -1,6 +1,6 @@
 #if defined(PLATFORM_ESP8266)
 /***
- * Slimmed-down version of esp8266_waveform for the ExpressLRS project
+ * Slimmed-down version of esp8266_waveform for the RuLRS project
  * 2022-04-27 Created by CapnBry
  * - Adds the ability to change every servo no matter where it is in the
  *   cycle without blocking.

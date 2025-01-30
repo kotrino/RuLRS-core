@@ -106,7 +106,7 @@ void DynamicPower_Update(uint32_t now)
     // state == connected is not used: unplugging an RX will be connected and will boost power to max before disconnect
     if (armed && (powerHeadroom > 0))
     {
-      uint32_t linkstatsInterval = ExpressLRS_currTlmDenom * ExpressLRS_currAirRate_Modparams->interval / (1000U / 2U);
+      uint32_t linkstatsInterval = RuLRS_currTlmDenom * RuLRS_currAirRate_Modparams->interval / (1000U / 2U);
       linkstatsInterval = std::max(linkstatsInterval, (uint32_t)512U);
       if ((now - dynpower_last_linkstats_millis) > (linkstatsInterval + 2U))
       {
@@ -142,7 +142,7 @@ void DynamicPower_Update(uint32_t now)
   }
 
   PowerLevels_e startPowerLevel = POWERMGNT::currPower();
-  if (ExpressLRS_currAirRate_RFperfParams->DynpowerSnrThreshUp == DYNPOWER_SNR_THRESH_NONE)
+  if (RuLRS_currAirRate_RFperfParams->DynpowerSnrThreshUp == DYNPOWER_SNR_THRESH_NONE)
   {
     // =============  RSSI-based power increment ==============
     // a simple threshold compared against N sample average of
@@ -151,7 +151,7 @@ void DynamicPower_Update(uint32_t now)
 
     if (dynpower_mean_rssi.getCount() >= DYNPOWER_RSSI_CNT)
     {
-      int32_t expected_RXsensitivity = ExpressLRS_currAirRate_RFperfParams->RXsensitivity;
+      int32_t expected_RXsensitivity = RuLRS_currAirRate_RFperfParams->RXsensitivity;
       int8_t rssi_inc_threshold = expected_RXsensitivity + DYNPOWER_RSSI_THRESH_UP;
       int8_t rssi_dec_threshold = expected_RXsensitivity + DYNPOWER_RSSI_THRESH_DN;
       int8_t avg_rssi = dynpower_mean_rssi.mean(); // resets it too
@@ -172,13 +172,13 @@ void DynamicPower_Update(uint32_t now)
     // =============  SNR-based power increment ==============
     // Decrease the power if SNR above threshold and LQ is good
     // Increase the power for each (X) SNR below the threshold
-    if (snrScaled >= ExpressLRS_currAirRate_RFperfParams->DynpowerSnrThreshDn && lq_avg >= DYNPOWER_LQ_THRESH_DN)
+    if (snrScaled >= RuLRS_currAirRate_RFperfParams->DynpowerSnrThreshDn && lq_avg >= DYNPOWER_LQ_THRESH_DN)
     {
       DBGVLN("-power (snr)"); // Verbose because this spams when idle
       POWERMGNT::decPower();
     }
 
-    while ((snrScaled <= ExpressLRS_currAirRate_RFperfParams->DynpowerSnrThreshUp) && (powerHeadroom > 0))
+    while ((snrScaled <= RuLRS_currAirRate_RFperfParams->DynpowerSnrThreshUp) && (powerHeadroom > 0))
     {
       DBGLN("+power (snr)");
       POWERMGNT::incPower();

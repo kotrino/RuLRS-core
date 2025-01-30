@@ -1,5 +1,5 @@
 # This script runs an automated voltage sweep while collecting ADC DBGLN() output
-# from an ExpressLRS RX using devAnalogVbat. The receiver should be compiled with:
+# from an RuLRS RX using devAnalogVbat. The receiver should be compiled with:
 #   -DDEBUG_VBAT_ADC -DDEBUG_LOG -DDEBUG_CRSF_NO_OUTPUT -DRCVR_UART_BAUD=460800
 # (lots of UART errors at the default 420000)
 # If firmware is workign correctly `cat /dev/ttyUSB0` will show values such as
@@ -85,7 +85,7 @@ def runSweep(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description="Run a voltage sweep using a Korad power supply and recevie ADC data from an ELRS receiver")
+        description="Run a voltage sweep using a Korad power supply and recevie ADC data from an RULRS receiver")
     parser.add_argument("-b", "--rbaud", type=int, default=460800,
         help="Receiver UART baud")
     parser.add_argument("-e", "--end", type=int, default=100,

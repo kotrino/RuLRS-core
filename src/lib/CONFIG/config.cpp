@@ -126,7 +126,7 @@ void TxConfig::Load()
         err = nvs_flash_init();
     }
     ESP_ERROR_CHECK( err );
-    ESP_ERROR_CHECK(nvs_open("ELRS", NVS_READWRITE, &handle));
+    ESP_ERROR_CHECK(nvs_open("RULRS", NVS_READWRITE, &handle));
 
     // Try to load the version and make sure it is a TX config
     uint32_t version = 0;
@@ -554,7 +554,7 @@ TxConfig::SetPowerFanThreshold(uint8_t powerFanThreshold)
 }
 
 void
-TxConfig::SetStorageProvider(ELRS_EEPROM *eeprom)
+TxConfig::SetStorageProvider(RULRS_EEPROM *eeprom)
 {
     if (eeprom)
     {
@@ -1167,7 +1167,7 @@ RxConfig::SetDefaults(bool commit)
 }
 
 void
-RxConfig::SetStorageProvider(ELRS_EEPROM *eeprom)
+RxConfig::SetStorageProvider(RULRS_EEPROM *eeprom)
 {
     if (eeprom)
     {

@@ -15,13 +15,13 @@ const char version[] = {LATEST_VERSION, 0};
 #endif
 
 #if defined(TARGET_TX)
-const char *wifi_hostname = "elrs_tx";
-const char *wifi_ap_ssid = "ExpressLRS TX";
+const char *wifi_hostname = "rulrs_tx";
+const char *wifi_ap_ssid = "RULRS TX";
 #else
-const char *wifi_hostname = "elrs_rx";
-const char *wifi_ap_ssid = "ExpressLRS RX";
+const char *wifi_hostname = "rulrs_rx";
+const char *wifi_ap_ssid = "RULRS RX";
 #endif
-const char *wifi_ap_password = "expresslrs";
+const char *wifi_ap_password = "rulrs";
 const char *wifi_ap_address = "10.0.0.1";
 
 #if defined(UNIT_TEST)
@@ -41,8 +41,8 @@ firmware_options_t firmwareOptions;
 #include "esp_ota_ops.h"
 #endif
 
-char product_name[ELRSOPTS_PRODUCTNAME_SIZE+1];
-char device_name[ELRSOPTS_DEVICENAME_SIZE+1];
+char product_name[RULRSOPTS_PRODUCTNAME_SIZE+1];
+char device_name[RULRSOPTS_DEVICENAME_SIZE+1];
 uint32_t logo_image;
 
 firmware_options_t firmwareOptions;
@@ -127,7 +127,7 @@ static void options_LoadFromFlashOrFile(EspFlashStream &strmFlash)
     bool hasSpiffs = false;
 
     // Try OPTIONS JSON at the end of the firmware, after PRODUCTNAME DEVICENAME
-    constexpr size_t optionConfigOffset = ELRSOPTS_PRODUCTNAME_SIZE + ELRSOPTS_DEVICENAME_SIZE;
+    constexpr size_t optionConfigOffset = RULRSOPTS_PRODUCTNAME_SIZE + RULRSOPTS_DEVICENAME_SIZE;
     strmFlash.setPosition(optionConfigOffset);
     if (options_HasStringInFlash(strmFlash))
     {
@@ -230,11 +230,11 @@ static bool options_LoadProductAndDeviceName(EspFlashStream &strmFlash)
     {
         strmFlash.setPosition(0);
         // Product name
-        strmFlash.readBytes(product_name, ELRSOPTS_PRODUCTNAME_SIZE);
-        product_name[ELRSOPTS_PRODUCTNAME_SIZE] = '\0';
+        strmFlash.readBytes(product_name, RULRSOPTS_PRODUCTNAME_SIZE);
+        product_name[RULRSOPTS_PRODUCTNAME_SIZE] = '\0';
         // Device name
-        strmFlash.readBytes(device_name, ELRSOPTS_DEVICENAME_SIZE);
-        device_name[ELRSOPTS_DEVICENAME_SIZE] = '\0';
+        strmFlash.readBytes(device_name, RULRSOPTS_DEVICENAME_SIZE);
+        device_name[RULRSOPTS_DEVICENAME_SIZE] = '\0';
 
         return true;
     }
@@ -280,10 +280,10 @@ bool options_init()
     bool hasHardware = hardware_init(strmFlash);
     // flash location of logo image in RGB565 format
     logo_image = baseAddr + ESP.getSketchSize() +
-        ELRSOPTS_PRODUCTNAME_SIZE +
-        ELRSOPTS_DEVICENAME_SIZE +
-        ELRSOPTS_OPTIONS_SIZE +
-        ELRSOPTS_HARDWARE_SIZE;
+        RULRSOPTS_PRODUCTNAME_SIZE +
+        RULRSOPTS_DEVICENAME_SIZE +
+        RULRSOPTS_OPTIONS_SIZE +
+        RULRSOPTS_HARDWARE_SIZE;
 
     debugFreeInitLogger();
 

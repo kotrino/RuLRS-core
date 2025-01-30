@@ -4,14 +4,14 @@
 # It is entirely up to the end user to ensure compliance with local regulations. No claim of regulatory compliance is made. In most cases a HAM license is required.
 # This is experimental software/hardware and there is no guarantee of stability or reliability. USE AT YOUR OWN RISK
 
-# HOW TO USE THIS FILE: https://www.expresslrs.org/1.0/software/user-defines/
+# HOW TO USE THIS FILE: https://www.rulrs.org/1.0/software/user-defines/
 # SIMPLY SEARCH WHICH DEFINE YOU NEED HELP WITH
 
 
 ### BINDING PHRASE: ###
 # Uncomment the line below to use a hardcoded binding phrase
 # Leave commented to use traditional binding
-#-DMY_BINDING_PHRASE="default ExpressLRS binding phrase"
+#-DMY_BINDING_PHRASE="default RuLRS binding phrase"
 
 
 ### REGULATORY DOMAIN: ###
@@ -95,5 +95,5 @@
 # Also logs forced resyncs when a packet is delayed or missed.
 #-DDEBUG_OPENTX_SYNC
 
-# Use an ELRS TX and RX as a transparent UART over the air
+# Use an RULRS TX and RX as a transparent UART over the air
 #-DUSE_AIRPORT_AT_BAUD=9600

@@ -142,8 +142,8 @@ static uint8_t sendCRSFparam(crsf_frame_type_e frameType, uint8_t fieldChunk, st
 #ifdef TARGET_TX
   // Set the hidden flag
   chunkBuffer[3] |= luaData->type & CRSF_FIELD_HIDDEN ? 0x80 : 0;
-  if (CRSFHandset::elrsLUAmode) {
-    chunkBuffer[3] |= luaData->type & CRSF_FIELD_ELRS_HIDDEN ? 0x80 : 0;
+  if (CRSFHandset::rulrsLUAmode) {
+    chunkBuffer[3] |= luaData->type & CRSF_FIELD_RULRS_HIDDEN ? 0x80 : 0;
   }
 #else
   chunkBuffer[3] |= luaData->type;
@@ -255,14 +255,14 @@ void setLuaWarningFlag(lua_Flags flag, bool value)
   }
 }
 
-static void updateElrsFlags()
+static void updateRulrsFlags()
 {
   setLuaWarningFlag(LUA_FLAG_MODEL_MATCH, connectionState == connected && connectionHasModelMatch == false);
   setLuaWarningFlag(LUA_FLAG_CONNECTED, connectionState == connected);
   setLuaWarningFlag(LUA_FLAG_ISARMED, handset->IsArmed());
 }
 
-void sendELRSstatus()
+void sendRuLRSstatus()
 {
   constexpr const char *messages[] = { //higher order = higher priority
     "",                   //status2 = connected status
@@ -284,8 +284,8 @@ void sendELRSstatus()
           break;
       }
   }
-  uint8_t buffer[sizeof(tagLuaElrsParams) + strlen(warningInfo) + 1];
-  struct tagLuaElrsParams * const params = (struct tagLuaElrsParams *)buffer;
+  uint8_t buffer[sizeof(tagLuaRulrsParams) + strlen(warningInfo) + 1];
+  struct tagLuaRulrsParams * const params = (struct tagLuaRulrsParams *)buffer;
 
   params->pktsBad = CRSFHandset::BadPktsCountResult;
   params->pktsGood = htobe16(CRSFHandset::GoodPktsCountResult);
@@ -355,11 +355,11 @@ bool luaHandleUpdateParameter()
     case CRSF_FRAMETYPE_PARAMETER_WRITE:
       if (parameterIndex == 0)
       {
-        // special case for elrs linkstat request
+        // special case for rulrs linkstat request
 #ifdef TARGET_TX
-        DBGVLN("ELRS status request");
-        updateElrsFlags();
-        sendELRSstatus();
+        DBGVLN("RULRS status request");
+        updateRulrsFlags();
+        sendRulrsstatus();
       } else if (parameterIndex == 0x2E) {
         luaSupressCriticalErrors();
 #endif

@@ -101,7 +101,7 @@ static struct luaItem_string luaModelNumber = {
     modelString
 };
 
-static struct luaItem_string luaELRSversion = {
+static struct luaItem_string luaRuLRSversion = {
     {version, CRSF_INFO},
     commit
 };
@@ -567,7 +567,7 @@ static void registerLuaParameters()
   });
 
   registerLUAParameter(&luaModelNumber);
-  registerLUAParameter(&luaELRSversion);
+  registerLUAParameter(&luaRuLRSversion);
   registerLUAParameter(nullptr);
 }
 
@@ -649,7 +649,7 @@ static int timeout()
   // Receivers can only `UpdateParamReq == true` every 4th packet due to the transmitter cadence in 1:2
   // Channels, Downlink Telemetry Slot, Uplink Telemetry (the write command), Downlink Telemetry Slot...
   // (interval * 4 / 1000) or 1 second if not connected
-  return (connectionState == connected) ? ExpressLRS_currAirRate_Modparams->interval / 250 : 1000;
+  return (connectionState == connected) ? RuLRS_currAirRate_Modparams->interval / 250 : 1000;
 }
 
 static int start()

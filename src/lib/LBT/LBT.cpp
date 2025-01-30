@@ -99,7 +99,7 @@ void ICACHE_RAM_ATTR SetClearChannelAssessmentTime(void)
     return;
 
   rxStartTime = micros();
-  validRSSIdelayUs = SpreadingFactorToRSSIvalidDelayUs((SX1280_RadioLoRaSpreadingFactors_t)ExpressLRS_currAirRate_Modparams->sf, ExpressLRS_currAirRate_Modparams->radio_type);
+  validRSSIdelayUs = SpreadingFactorToRSSIvalidDelayUs((SX1280_RadioLoRaSpreadingFactors_t)RuLRS_currAirRate_Modparams->sf, RuLRS_currAirRate_Modparams->radio_type);
 
 #if defined(TARGET_TX)
   Radio.RXnb(SX1280_MODE_RX, validRSSIdelayUs);
@@ -141,7 +141,7 @@ SX12XX_Radio_Number_t ICACHE_RAM_ATTR ChannelIsClear(SX12XX_Radio_Number_t radio
   int8_t rssiInst1 = 0;
   int8_t rssiInst2 = 0;
   SX12XX_Radio_Number_t clearChannelsMask = SX12XX_Radio_NONE;
-  int8_t rssiCutOff = PowerEnumToLBTLimit((PowerLevels_e)POWERMGNT::currPower(), ExpressLRS_currAirRate_Modparams->radio_type);
+  int8_t rssiCutOff = PowerEnumToLBTLimit((PowerLevels_e)POWERMGNT::currPower(), RuLRS_currAirRate_Modparams->radio_type);
 
   if (radioNumber & SX12XX_Radio_1)
   {

@@ -1,17 +1,17 @@
 ---
-name: Bug Report
-about: You found a bug in ExpressLRS. 🐞
+name: Отчет об ошибке
+about: Вы нашли ошибку в RuLRS. 🐞
 labels: 'bug'
 ---
 
-## Current Behavior
+## Текущее поведение
 
-<!--- What went wrong? -->
+<!--- Что пошло не так? -->
 
-## Steps to Reproduce
+## Шаги для воспроизведения
 
-<!-- Add relevant code and/or a live example -->
-<!-- Add stack traces -->
+<!-- Добавьте соответствующий код и/или живой пример -->
+<!-- Добавьте трассировку стека -->
 
 1.
 
@@ -21,27 +21,27 @@ labels: 'bug'
 
 4.
 
-## Possible Solution (Not obligatory)
+## Возможное решение (Необязательно)
 
-<!--- Suggest a reason for the bug or how to fix it. -->
+<!--- Предложите причину ошибки или способ её исправления. -->
 
-## Details
+## Детали
 
-<!--- Additional details you think might be relevant -->
+<!--- Дополнительные детали, которые могут быть важны -->
 
-<!--- How has this issue affected you? What are you trying to accomplish? -->
-<!--- Did you make any changes to the boilerplate after cloning it? -->
-<!--- Providing context helps us come up with a solution that is most useful in the real world -->
+<!--- Как эта проблема повлияла на вас? Что вы пытаетесь достичь? -->
+<!--- Вносили ли вы какие-либо изменения после клонирования? -->
+<!--- Предоставление контекста помогает нам найти наиболее полезное решение -->
 
-## Your Environment
+## Ваше окружение
 
-<!--- Include as many relevant details about the environment you experienced the bug in -->
+<!--- Включите как можно больше деталей об окружении, в котором возникла ошибка -->
 
-- TX hardware:
-- RX hardware:
-- Handset model:
-- OpenTX version (including nightly number)
-- ExpressLRS version (TX & RX MUST MATCH):
-- Packet Rate:
-- Telemetry Ratio:
-- user_defines:
+- TX оборудование:
+- RX оборудование:
+- Модель передатчика:
+- Версия OpenTX (включая номер nightly):
+- Версия RuLRS (TX и RX ДОЛЖНЫ СОВПАДАТЬ):
+- Частота пакетов:
+- Соотношение телеметрии:
+- Пользовательские настройки:

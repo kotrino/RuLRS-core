@@ -13,9 +13,9 @@
 #include <BleGamepad.h>
 #include <NimBLEDevice.h>
 
-class ELRSGamepad : public BleGamepad {
+class RULRSGamepad : public BleGamepad {
     public:
-        ELRSGamepad() : BleGamepad("ExpressLRS Joystick", "ELRS", 100) {};
+        RULRSGamepad() : BleGamepad("RuLRS Joystick", "RULRS", 100) {};
 
     protected:
         void onStarted(NimBLEServer *pServer) {
@@ -23,7 +23,7 @@ class ELRSGamepad : public BleGamepad {
         }
 };
 
-static ELRSGamepad *bleGamepad;
+static RULRSGamepad *bleGamepad;
 
 void BluetoothJoystickUpdateValues()
 {
@@ -59,7 +59,7 @@ void BluetoothJoystickBegin()
         return;
 
     // construct the BLE immediately to prevent reentry from events/timeout
-    bleGamepad = new ELRSGamepad();
+    bleGamepad = new RULRSGamepad();
 
     POWERMGNT::setPower(MinPower);
     Radio.End();

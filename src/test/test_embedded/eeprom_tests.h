@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <unity.h>
-#include "elrs_eeprom.h"
+#include "rulrs_eeprom.h"
 
-ELRS_EEPROM eeprom;
+RULRS_EEPROM eeprom;
 
 void test_eeprom_rw(void)
 {

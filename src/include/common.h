@@ -16,8 +16,8 @@
 
 #endif // UNIT_TEST
 
-// Used to XOR with OtaCrcInitializer and macSeed to reduce compatibility with previous versions.
-// It should be incremented when the OTA packet structure is modified.
+// Используется для XOR с OtaCrcInitializer и macSeed для уменьшения совместимости с предыдущими версиями.
+// Должно быть увеличено при изменении структуры пакета OTA.
 #define OTA_VERSION_ID      4
 #define UID_LEN             6
 
@@ -33,7 +33,7 @@ typedef enum : uint8_t
     TLM_RATIO_1_4,
     TLM_RATIO_1_2,
     TLM_RATIO_DISARMED, // TLM_RATIO_STD when disarmed, TLM_RATIO_NO_TLM when armed
-} expresslrs_tlm_ratio_e;
+} rulrs_tlm_ratio_e;
 
 typedef enum
 {
@@ -55,13 +55,13 @@ typedef enum
 } connectionState_e;
 
 /**
- * On the TX, tracks what to do when the Tock timer fires
+ * На TX отслеживает, что делать при срабатывании таймера Tock
  **/
 typedef enum
 {
-    ttrpTransmitting,     // Transmitting RC channels as normal
-    ttrpPreReceiveGap,    // Has switched to Receive mode for telemetry, but in the gap between TX done and Tock
-    ttrpExpectingTelem    // Still in Receive mode, Tock has fired, receiving telem as far as we know
+    ttrpTransmitting,     // Передача RC каналов в нормальном режиме
+    ttrpPreReceiveGap,    // Переключился в режим приема телеметрии, но находится в промежутке между окончанием передачи и Tock
+    ttrpExpectingTelem    // Все еще в режиме приема, Tock сработал, получаем телеметрию насколько нам известно
 } TxTlmRcvPhase_e;
 
 typedef enum
@@ -76,7 +76,7 @@ typedef enum
     RF_DOWNLINK_INFO = 0,
     RF_UPLINK_INFO = 1,
     RF_AIRMODE_PARAMETERS = 2
-} expresslrs_tlm_header_e;
+} rulrs_tlm_header_e;
 
 typedef enum : uint8_t
 {
@@ -115,7 +115,7 @@ typedef enum : uint8_t
     
     RATE_LORA_DUAL_100HZ_8CH = 100,
     RATE_LORA_DUAL_150HZ,
-} expresslrs_RFrates_e;
+} rulrs_RFrates_e;
 
 enum {
     RADIO_TYPE_SX127x_LORA,
@@ -142,83 +142,83 @@ typedef enum : uint8_t
     TX_MAVLINK_MODE     = 1,
 } tx_transmission_mode_e;
 
-// Value used for expresslrs_rf_pref_params_s.DynpowerUpThresholdSnr if SNR should not be used
+// Значение используется для rulrs_rf_pref_params_s.DynpowerUpThresholdSnr если SNR не должен использоваться
 #define DYNPOWER_SNR_THRESH_NONE -127
 #define SNR_SCALE(snr) ((int8_t)((float)snr * RADIO_SNR_SCALE))
 #define SNR_DESCALE(snrScaled) (snrScaled / RADIO_SNR_SCALE)
-// Bound is any of the last 4 bytes nonzero (unbound is all zeroes)
+// Привязка есть, если любой из последних 4 байтов не нулевой (непривязанное состояние - все нули)
 #define UID_IS_BOUND(uid) (uid[2] != 0 || uid[3] != 0 || uid[4] != 0 || uid[5] != 0)
 
-typedef struct expresslrs_rf_pref_params_s
+typedef struct rulrs_rf_pref_params_s
 {
     uint8_t index;
-    int16_t RXsensitivity;                // expected min RF sensitivity
-    uint16_t TOA;                         // time on air in microseconds
-    uint16_t DisconnectTimeoutMs;         // Time without a packet before receiver goes to disconnected (ms)
-    uint16_t RxLockTimeoutMs;             // Max time to go from tentative -> connected state on receiver (ms)
-    uint16_t SyncPktIntervalDisconnected; // how often to send the PACKET_TYPE_SYNC (ms) when there is no response from RX
-    uint16_t SyncPktIntervalConnected;    // how often to send the PACKET_TYPE_SYNC (ms) when there we have a connection
-    int8_t DynpowerSnrThreshUp;           // Request a raise in power if the reported (average) SNR is at or below this
-                                          // or DYNPOWER_UPTHRESH_SNR_NONE to use RSSI
-    int8_t DynpowerSnrThreshDn;           // Like DynpowerSnrUpThreshold except to lower power
+    int16_t RXsensitivity;                // ожидаемая минимальная чувствительность RF
+    uint16_t TOA;                         // время в эфире в микросекундах
+    uint16_t DisconnectTimeoutMs;         // Время без пакета до перехода приемника в состояние отключения (мс)
+    uint16_t RxLockTimeoutMs;             // Максимальное время перехода из предварительного в подключенное состояние на приемнике (мс)
+    uint16_t SyncPktIntervalDisconnected; // как часто отправлять PACKET_TYPE_SYNC (мс) когда нет ответа от RX
+    uint16_t SyncPktIntervalConnected;    // как часто отправлять PACKET_TYPE_SYNC (мс) когда есть соединение
+    int8_t DynpowerSnrThreshUp;           // Запрос на увеличение мощности, если отчетный (средний) SNR находится на этом уровне или ниже
+                                          // или DYNPOWER_UPTHRESH_SNR_NONE для использования RSSI
+    int8_t DynpowerSnrThreshDn;           // Аналогично DynpowerSnrUpThreshold, но для снижения мощности
 
-} expresslrs_rf_pref_params_s;
+} rulrs_rf_pref_params_s;
 
-typedef struct expresslrs_mod_settings_s
+typedef struct rulrs_mod_settings_s
 {
     uint8_t index;
     uint8_t radio_type;
-    expresslrs_RFrates_e enum_rate;
-    uint8_t bw;
-    uint8_t sf;
-    uint8_t cr;
-    uint8_t PreambleLen;
+    rulrs_RFrates_e enum_rate;
+    uint8_t bw;                    // ширина полосы
+    uint8_t sf;                    // коэффициент распространения
+    uint8_t cr;                    // скорость кодирования
+    uint8_t PreambleLen;           // длина преамбулы
 #if defined(RADIO_LR1121)
-    uint8_t bw2;
-    uint8_t sf2;
-    uint8_t cr2;
-    uint8_t PreambleLen2;
+    uint8_t bw2;                   // ширина полосы 2
+    uint8_t sf2;                   // коэффициент распространения 2
+    uint8_t cr2;                   // скорость кодирования 2
+    uint8_t PreambleLen2;          // длина преамбулы 2
 #endif
-    expresslrs_tlm_ratio_e TLMinterval;        // every X packets is a response TLM packet, should be a power of 2
-    uint8_t FHSShopInterval;    // every X packets we hop to a new frequency. Max value of 16 since only 4 bits have been assigned in the sync package.
-    int32_t interval;           // interval in us seconds that corresponds to that frequency
-    uint8_t PayloadLength;      // Number of OTA bytes to be sent.
-    uint8_t numOfSends;         // Number of packets to send.
-} expresslrs_mod_settings_t;
+    rulrs_tlm_ratio_e TLMinterval; // каждый X пакет является ответным пакетом TLM, должен быть степенью 2
+    uint8_t FHSShopInterval;       // каждые X пакетов мы переходим на новую частоту. Максимальное значение 16, так как в sync-пакете выделено только 4 бита
+    int32_t interval;              // интервал в микросекундах, соответствующий этой частоте
+    uint8_t PayloadLength;         // Количество OTA байт для отправки
+    uint8_t numOfSends;            // Количество пакетов для отправки
+} rulrs_mod_settings_t;
 
-// Limited to 16 possible ACTIONs by config storage currently
+// Ограничено 16 возможными действиями из-за текущего хранения конфигурации
 typedef enum : uint8_t {
     ACTION_NONE,
-    ACTION_INCREASE_POWER,
-    ACTION_GOTO_VTX_BAND,
-    ACTION_GOTO_VTX_CHANNEL,
-    ACTION_SEND_VTX,
-    ACTION_START_WIFI,
-    ACTION_BIND,
-    ACTION_BLE_JOYSTICK,
-    ACTION_RESET_REBOOT,
+    ACTION_INCREASE_POWER,        // Увеличить мощность
+    ACTION_GOTO_VTX_BAND,        // Перейти на диапазон VTX
+    ACTION_GOTO_VTX_CHANNEL,     // Перейти на канал VTX
+    ACTION_SEND_VTX,             // Отправить VTX
+    ACTION_START_WIFI,           // Запустить WiFi
+    ACTION_BIND,                 // Привязка
+    ACTION_BLE_JOYSTICK,         // Джойстик BLE
+    ACTION_RESET_REBOOT,         // Сброс и перезагрузка
 
     ACTION_LAST
 } action_e;
 
 enum eServoOutputMode : uint8_t
 {
-    som50Hz = 0,    // 0:  50 Hz  | modes are "Servo PWM" where the signal is 988-2012us
-    som60Hz,        // 1:  60 Hz  | and the mode sets the refresh interval
-    som100Hz,       // 2:  100 Hz | must be mode=0 for default in config
-    som160Hz,       // 3:  160Hz
-    som333Hz,       // 4:  333Hz
-    som400Hz,       // 5:  400Hz
-    som10KHzDuty,   // 6:  10kHz duty
-    somOnOff,       // 7:  Digital 0/1 mode
+    som50Hz = 0,    // 0:  50 Гц   | режимы "Servo PWM", где сигнал 988-2012мкс
+    som60Hz,        // 1:  60 Гц   | и режим устанавливает интервал обновления
+    som100Hz,       // 2:  100 Гц  | должен быть режим=0 по умолчанию в конфигурации
+    som160Hz,       // 3:  160 Гц
+    som333Hz,       // 4:  333 Гц
+    som400Hz,       // 5:  400 Гц
+    som10KHzDuty,   // 6:  10кГц duty
+    somOnOff,       // 7:  Цифровой режим 0/1
     somDShot,       // 8:  DShot300
     somSerial,      // 9:  primary Serial
-    somSCL,         // 10: I2C clock signal
-    somSDA,         // 11: I2C data line
-    somPwm,         // 12: true PWM mode (NOT SUPPORTED)
+    somSCL,         // 10: сигнал тактирования I2C
+    somSDA,         // 11: линия данных I2C
+    somPwm,         // 12: настоящий режим PWM (НЕ ПОДДЕРЖИВАЕТСЯ)
 #if defined(PLATFORM_ESP32)
-    somSerial1RX,   // 13: secondary Serial RX
-    somSerial1TX,   // 14: secondary Serial TX
+    somSerial1RX,   // 13: вторичный Serial RX
+    somSerial1TX,   // 14: вторичный Serial TX
 #endif
 };
 
@@ -285,64 +285,68 @@ enum eAuxChannels : uint8_t
     CRSF_NUM_CHANNELS = 16
 };
 
-//ELRS SPECIFIC OTA CRC
-//Koopman formatting https://users.ece.cmu.edu/~koopman/crc/
-#define ELRS_CRC_POLY 0x07 // 0x83
-#define ELRS_CRC14_POLY 0x2E57 // 0x372B
+// СПЕЦИФИЧНЫЙ ДЛЯ ELRS OTA CRC
+// Форматирование Купмана https://users.ece.cmu.edu/~koopman/crc/
+#define RULRS_CRC_POLY 0x07 // 0x83
+#define RULRS_CRC14_POLY 0x2E57 // 0x372B
 
 #ifndef UNIT_TEST
 #if defined(RADIO_SX127X)
-#define RATE_MAX 6
-#define RATE_BINDING RATE_LORA_900_50HZ
+#define RATE_MAX 6                              // Максимальное количество поддерживаемых скоростей
+#define RATE_BINDING RATE_LORA_900_50HZ         // Скорость для режима привязки
 
 extern SX127xDriver Radio;
 
 #elif defined(RADIO_LR1121)
-#define RATE_MAX 20
-#define RATE_BINDING RATE_LORA_900_50HZ
-#define RATE_DUALBAND_BINDING RATE_LORA_2G4_50HZ
+#define RATE_MAX 20                             // Максимальное количество поддерживаемых скоростей
+#define RATE_BINDING RATE_LORA_900_50HZ         // Скорость для режима привязки
+#define RATE_DUALBAND_BINDING RATE_LORA_2G4_50HZ // Скорость для режима привязки в двухдиапазонном режиме
 
 extern LR1121Driver Radio;
 
 #elif defined(RADIO_SX128X)
-#define RATE_MAX 10     // 2xFLRC + 2xDVDA + 4xLoRa + 2xFullRes
-#define RATE_BINDING RATE_LORA_2G4_50HZ
+#define RATE_MAX 10                             // 2xFLRC + 2xDVDA + 4xLoRa + 2xFullRes
+#define RATE_BINDING RATE_LORA_2G4_50HZ         // Скорость для режима привязки
 
 extern SX1280Driver Radio;
 #endif
 #endif // UNIT_TEST
 
-expresslrs_mod_settings_s *get_elrs_airRateConfig(uint8_t index);
-expresslrs_rf_pref_params_s *get_elrs_RFperfParams(uint8_t index);
-uint8_t get_elrs_HandsetRate_max(uint8_t rateIndex, uint32_t minInterval);
+// Функции для работы с параметрами радио
+rulrs_mod_settings_s *get_rulrs_airRateConfig(uint8_t index);        // Получить конфигурацию скорости передачи
+rulrs_rf_pref_params_s *get_rulrs_RFperfParams(uint8_t index);      // Получить параметры производительности RF
+uint8_t get_rulrs_HandsetRate_max(uint8_t rateIndex, uint32_t minInterval); // Получить максимальную скорость передатчика
 
-uint8_t TLMratioEnumToValue(expresslrs_tlm_ratio_e const enumval);
-uint8_t TLMBurstMaxForRateRatio(uint16_t const rateHz, uint8_t const ratioDiv);
-uint8_t enumRatetoIndex(expresslrs_RFrates_e const eRate);
+// Функции для работы с телеметрией
+uint8_t TLMratioEnumToValue(rulrs_tlm_ratio_e const enumval);       // Преобразование перечисления в значение
+uint8_t TLMBurstMaxForRateRatio(uint16_t const rateHz, uint8_t const ratioDiv); // Максимальное количество пакетов телеметрии
+uint8_t enumRatetoIndex(rulrs_RFrates_e const eRate);               // Преобразование перечисления скорости в индекс
 
-extern uint8_t UID[UID_LEN];
-extern bool connectionHasModelMatch;
-extern bool teamraceHasModelMatch;
-extern bool InBindingMode;
-extern uint8_t ExpressLRS_currTlmDenom;
-extern expresslrs_mod_settings_s *ExpressLRS_currAirRate_Modparams;
-extern expresslrs_rf_pref_params_s *ExpressLRS_currAirRate_RFperfParams;
-extern uint32_t ChannelData[CRSF_NUM_CHANNELS]; // Current state of channels, CRSF format
+// Глобальные переменные
+extern uint8_t UID[UID_LEN];                    // Уникальный идентификатор
+extern bool connectionHasModelMatch;            // Флаг соответствия модели
+extern bool teamraceHasModelMatch;              // Флаг соответствия модели для командной гонки
+extern bool InBindingMode;                      // Флаг режима привязки
+extern uint8_t RuLRS_currTlmDenom;             // Текущий знаменатель телеметрии
+extern rulrs_mod_settings_s *RuLRS_currAirRate_Modparams;     // Текущие параметры модуляции
+extern rulrs_rf_pref_params_s *RuLRS_currAirRate_RFperfParams; // Текущие параметры производительности RF
+extern uint32_t ChannelData[CRSF_NUM_CHANNELS]; // Текущее состояние каналов в формате CRSF
 
 extern connectionState_e connectionState;
 #if !defined(UNIT_TEST)
 inline void setConnectionState(connectionState_e newState) {
     connectionState = newState;
-    devicesTriggerEvent(EVENT_CONNECTION_CHANGED);
+    devicesTriggerEvent(EVENT_CONNECTION_CHANGED); // Вызов события изменения соединения
 }
 #endif
 
-uint32_t uidMacSeedGet();
-bool isDualRadio();
-void EnterBindingModeSafely(); // defined in rx_main/tx_main
+// Функции для работы с UID и радио
+uint32_t uidMacSeedGet();                      // Получить seed на основе UID
+bool isDualRadio();                            // Проверка на двухдиапазонный режим
+void EnterBindingModeSafely();                 // Безопасный вход в режим привязки
 
 #if defined(RADIO_LR1121)
-bool isSupportedRFRate(uint8_t index);
+bool isSupportedRFRate(uint8_t index);         // Проверка поддержки скорости RF
 #else
-inline bool isSupportedRFRate(uint8_t index) { return true; }
+inline bool isSupportedRFRate(uint8_t index) { return true; } // Все скорости поддерживаются
 #endif

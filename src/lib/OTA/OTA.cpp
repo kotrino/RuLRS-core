@@ -1,6 +1,6 @@
 /**
- * This file is part of ExpressLRS
- * See https://github.com/AlessandroAU/ExpressLRS
+ * This file is part of RuLRS
+ * See https://github.com/AlessandroAU/RuLRS
  *
  * This file provides utilities for packing and unpacking the data to
  * be sent over the radio link.
@@ -507,7 +507,7 @@ bool ICACHE_RAM_ATTR ValidatePacketCrcStd(OTA_Packet_s * const otaPktPtr)
 #if defined(TARGET_RX)
     if (otaPktPtr->std.type == PACKET_TYPE_RCDATA && OtaSwitchModeCurrent == smWideOr8ch)
     {
-        otaPktPtr->std.crcHigh = (OtaNonce % ExpressLRS_currAirRate_Modparams->FHSShopInterval) + 1;
+        otaPktPtr->std.crcHigh = (OtaNonce % RuLRS_currAirRate_Modparams->FHSShopInterval) + 1;
     }
     else
 #endif
@@ -533,7 +533,7 @@ void ICACHE_RAM_ATTR GeneratePacketCrcStd(OTA_Packet_s * const otaPktPtr)
     // artificially inject the low bits of the nonce on data packets, this will be overwritten with the CRC after it's calculated
     if (otaPktPtr->std.type == PACKET_TYPE_RCDATA && OtaSwitchModeCurrent == smWideOr8ch)
     {
-        otaPktPtr->std.crcHigh = (OtaNonce % ExpressLRS_currAirRate_Modparams->FHSShopInterval) + 1;
+        otaPktPtr->std.crcHigh = (OtaNonce % RuLRS_currAirRate_Modparams->FHSShopInterval) + 1;
     }
 #endif
     uint16_t crc = ota_crc.calc((uint8_t*)otaPktPtr, OTA4_CRC_CALC_LEN, OtaCrcInitializer);
@@ -549,7 +549,7 @@ void OtaUpdateSerializers(OtaSwitchMode_e const switchMode, uint8_t packetSize)
     {
         OtaValidatePacketCrc = &ValidatePacketCrcFull;
         OtaGeneratePacketCrc = &GeneratePacketCrcFull;
-        ota_crc.init(16, ELRS_CRC16_POLY);
+        ota_crc.init(16, RULRS_CRC16_POLY);
 
         #if defined(TARGET_TX) || defined(UNIT_TEST)
         if (switchMode == smWideOr8ch)
@@ -566,7 +566,7 @@ void OtaUpdateSerializers(OtaSwitchMode_e const switchMode, uint8_t packetSize)
     {
         OtaValidatePacketCrc = &ValidatePacketCrcStd;
         OtaGeneratePacketCrc = &GeneratePacketCrcStd;
-        ota_crc.init(14, ELRS_CRC14_POLY);
+        ota_crc.init(14, RULRS_CRC14_POLY);
 
         if (switchMode == smWideOr8ch)
         {
@@ -600,13 +600,13 @@ void OtaPackAirportData(OTA_Packet_s * const otaPktPtr, FIFO<AP_MAX_BUF_LEN> *in
     uint8_t count = inputBuffer->size();
     if (OtaIsFullRes)
     {
-        count = std::min(count, (uint8_t)ELRS8_TELEMETRY_BYTES_PER_CALL);
+        count = std::min(count, (uint8_t)RULRS8_TELEMETRY_BYTES_PER_CALL);
         otaPktPtr->full.airport.count = count;
         inputBuffer->popBytes(otaPktPtr->full.airport.payload, count);
     }
     else
     {
-        count = std::min(count, (uint8_t)ELRS4_TELEMETRY_BYTES_PER_CALL);
+        count = std::min(count, (uint8_t)RULRS4_TELEMETRY_BYTES_PER_CALL);
         otaPktPtr->std.airport.count = count;
         inputBuffer->popBytes(otaPktPtr->std.airport.payload, count);
     }

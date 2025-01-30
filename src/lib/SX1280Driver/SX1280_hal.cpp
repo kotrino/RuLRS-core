@@ -13,7 +13,7 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
 
 Maintainer: Miguel Luis, Gregory Cristian and Matthieu Verdy
 
-Modified and adapted by Alessandro Carcione for ELRS project
+Modified and adapted by Alessandro Carcione for RULRS project
 */
 
 #ifndef UNIT_TEST

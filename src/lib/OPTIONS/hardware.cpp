@@ -227,7 +227,7 @@ bool hardware_init(EspFlashStream &strmFlash)
     JsonDocument doc;
     File file = SPIFFS.open("/hardware.json", "r");
     if (!file || file.isDirectory()) {
-        constexpr size_t hardwareConfigOffset = ELRSOPTS_PRODUCTNAME_SIZE + ELRSOPTS_DEVICENAME_SIZE + ELRSOPTS_OPTIONS_SIZE;
+        constexpr size_t hardwareConfigOffset = RULRSOPTS_PRODUCTNAME_SIZE + RULRSOPTS_DEVICENAME_SIZE + RULRSOPTS_OPTIONS_SIZE;
         strmFlash.setPosition(hardwareConfigOffset);
         if (!options_HasStringInFlash(strmFlash))
         {

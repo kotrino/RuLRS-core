@@ -76,7 +76,7 @@ typedef struct {
         struct {
             uint8_t packageIndex:7,
                     tlmConfirm:1;
-            uint8_t payload[ELRS4_MSP_BYTES_PER_CALL];
+            uint8_t payload[RULRS4_MSP_BYTES_PER_CALL];
         } msp_ul;
         /** PACKET_TYPE_SYNC **/
         OTA_Sync_s sync;
@@ -91,14 +91,14 @@ typedef struct {
                     uint8_t trueDiversityAvailable:1,
                             free:7;
                 } PACKED ul_link_stats;
-                uint8_t payload[ELRS4_TELEMETRY_BYTES_PER_CALL];
+                uint8_t payload[RULRS4_TELEMETRY_BYTES_PER_CALL];
             };
         } tlm_dl; // PACKET_TYPE_TLM
         /** PACKET_TYPE_AIRPORT **/
         struct {
             uint8_t free:2,
                     count:6;
-            uint8_t payload[ELRS4_TELEMETRY_BYTES_PER_CALL];
+            uint8_t payload[RULRS4_TELEMETRY_BYTES_PER_CALL];
         } PACKED airport;
     };
     uint8_t crcLow;
@@ -129,7 +129,7 @@ typedef struct {
             uint8_t packetType: 2,
                     packageIndex: 5,
                     tlmConfirm: 1;
-            uint8_t payload[ELRS8_MSP_BYTES_PER_CALL];
+            uint8_t payload[RULRS8_MSP_BYTES_PER_CALL];
         } msp_ul;
         /** PACKET_TYPE_SYNC **/
         struct {
@@ -147,9 +147,9 @@ typedef struct {
                     OTA_LinkStats_s stats;
                     uint8_t trueDiversityAvailable:1,
                             free:7;
-                    uint8_t payload[ELRS8_TELEMETRY_BYTES_PER_CALL - sizeof(OTA_LinkStats_s) - 1];
+                    uint8_t payload[RULRS8_TELEMETRY_BYTES_PER_CALL - sizeof(OTA_LinkStats_s) - 1];
                 } PACKED ul_link_stats;
-                uint8_t payload[ELRS8_TELEMETRY_BYTES_PER_CALL]; // containsLinkStats == false
+                uint8_t payload[RULRS8_TELEMETRY_BYTES_PER_CALL]; // containsLinkStats == false
             };
         } PACKED tlm_dl;
         /** PACKET_TYPE_AIRPORT **/
@@ -157,7 +157,7 @@ typedef struct {
             uint8_t packetType: 2,
                     free: 1,
                     count: 5;
-            uint8_t payload[ELRS8_TELEMETRY_BYTES_PER_CALL];
+            uint8_t payload[RULRS8_TELEMETRY_BYTES_PER_CALL];
         } PACKED airport;
     };
     uint16_t crc;  // crc16 LittleEndian
@@ -185,9 +185,9 @@ typedef void (*GeneratePacketCrc_t)(OTA_Packet_s * const otaPktPtr);
 extern ValidatePacketCrc_t OtaValidatePacketCrc;
 extern GeneratePacketCrc_t OtaGeneratePacketCrc;
 // Value is implicit leading 1, comment is Koopman formatting (implicit trailing 1) https://users.ece.cmu.edu/~koopman/crc/
-#define ELRS_CRC_POLY 0x07 // 0x83
-#define ELRS_CRC14_POLY 0x2E57 // 0x372b
-#define ELRS_CRC16_POLY 0x3D65 // 0x9eb2
+#define RULRS_CRC_POLY 0x07 // 0x83
+#define RULRS_CRC14_POLY 0x2E57 // 0x372b
+#define RULRS_CRC16_POLY 0x3D65 // 0x9eb2
 
 #if defined(TARGET_TX) || defined(UNIT_TEST)
 typedef void (*PackChannelData_t)(OTA_Packet_s * const otaPktPtr, const uint32_t *channelData, bool TelemetryStatus, uint8_t tlmDenom);

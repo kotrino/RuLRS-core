@@ -29,20 +29,20 @@ static FIFO<CRSF_SERIAL_OUT_FIFO_SIZE> SerialOutFIFO;
 
 Stream *CRSFHandset::PortSecondary;
 
-/// UART Handling ///
-uint32_t CRSFHandset::GoodPktsCountResult = 0;
-uint32_t CRSFHandset::BadPktsCountResult = 0;
+/// Обработка UART ///
+uint32_t CRSFHandset::GoodPktsCountResult = 0; // Счетчик хороших пакетов
+uint32_t CRSFHandset::BadPktsCountResult = 0;  // Счетчик плохих пакетов
 
 uint8_t CRSFHandset::modelId = 0;
 bool CRSFHandset::ForwardDevicePings = false;
-bool CRSFHandset::elrsLUAmode = false;
+bool CRSFHandset::rulrsLUAmode = false;
 bool CRSFHandset::halfDuplex = false;
 
-/// OpenTX mixer sync ///
-static const int32_t OpenTXsyncPacketInterval = 200; // in ms
-static const int32_t OpenTXsyncOffsetSafeMargin = 1000; // 100us
+/// Синхронизация с микшером OpenTX ///
+static const int32_t OpenTXsyncPacketInterval = 200; // в миллисекундах
+static const int32_t OpenTXsyncOffsetSafeMargin = 1000; // 100 микросекунд
 
-/// UART Handling ///
+/// Обработка UART ///
 static const int32_t TxToHandsetBauds[] = {400000, 115200, 5250000, 3750000, 1870000, 921600, 2250000};
 uint8_t CRSFHandset::UARTcurrentBaudIdx = 6;   // only used for baud-cycling, initialized to the end so the next one we try is the first in the list
 uint32_t CRSFHandset::UARTrequestedBaud = 5250000;
@@ -112,7 +112,7 @@ void CRSFHandset::flush_port_input()
 
 void CRSFHandset::makeLinkStatisticsPacket(uint8_t *buffer)
 {
-    // Note size of crsfLinkStatistics_t used, not full elrsLinkStatistics_t
+    // Note size of crsfLinkStatistics_t used, not full rulrsLinkStatistics_t
     constexpr uint8_t payloadLen = sizeof(crsfLinkStatistics_t);
 
     buffer[0] = CRSF_ADDRESS_RADIO_TRANSMITTER;
@@ -301,9 +301,9 @@ bool CRSFHandset::processInternalCrsfPackage(uint8_t *package)
 
     if (packetType >= CRSF_FRAMETYPE_DEVICE_PING &&
         (header->dest_addr == CRSF_ADDRESS_CRSF_TRANSMITTER || header->dest_addr == CRSF_ADDRESS_BROADCAST) &&
-        (header->orig_addr == CRSF_ADDRESS_RADIO_TRANSMITTER || header->orig_addr == CRSF_ADDRESS_ELRS_LUA))
+        (header->orig_addr == CRSF_ADDRESS_RADIO_TRANSMITTER || header->orig_addr == CRSF_ADDRESS_RULRS_LUA))
     {
-        elrsLUAmode = header->orig_addr == CRSF_ADDRESS_ELRS_LUA;
+        rulrsLUAmode = header->orig_addr == CRSF_ADDRESS_RULRS_LUA;
 
         if (packetType == CRSF_FRAMETYPE_COMMAND && header->payload[0] == CRSF_COMMAND_SUBCMD_RX && header->payload[1] == CRSF_COMMAND_MODEL_SELECT_ID)
         {
@@ -747,7 +747,7 @@ bool CRSFHandset::UARTwdt()
             retval = true;
         }
 #ifdef DEBUG_OPENTX_SYNC
-        if (abs((int)((1000000 / (ExpressLRS_currAirRate_Modparams->interval * ExpressLRS_currAirRate_Modparams->numOfSends)) - (int)GoodPktsCount)) > 1)
+        if (abs((int)((1000000 / (RuLRS_currAirRate_Modparams->interval * RuLRS_currAirRate_Modparams->numOfSends)) - (int)GoodPktsCount)) > 1)
 #endif
             DBGLN("UART STATS Bad:Good = %u:%u", BadPktsCount, GoodPktsCount);
 
@@ -765,6 +765,19 @@ bool CRSFHandset::UARTwdt()
     }
 #endif
     return retval;
+}
+
+// Здесь происходит обработка входящих данных с джойстика
+void CRSFHandset::handleCrsfPacket(uint8_t *packet, uint8_t length) {
+    switch (packet[0]) {
+        case CRSF_FRAMETYPE_RC_CHANNELS_PACKED:
+            // Обработка каналов управления джойстика
+            break;
+        case CRSF_FRAMETYPE_LINK_STATISTICS:
+            // Обработка статистики соединения
+            break;
+        // ...
+    }
 }
 
 #endif // CRSF_TX_MODULE

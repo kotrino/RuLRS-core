@@ -1,4 +1,4 @@
-name: Build ExpressLRS
+name: Build RuLRS
 on: [push, pull_request]
 jobs:
   test:
@@ -181,7 +181,7 @@ jobs:
           cd dist
           zip -r -9 ../firmware.zip ./firmware
 
-      - name: Upload firmware bundle to ExpressLRS artifactory
+      - name: Upload firmware bundle to RuLRS artifactory
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -193,14 +193,14 @@ jobs:
             exit 0
           fi
 
-          aws s3api head-object --endpoint-url $AWS_ENDPOINT_URL --bucket expresslrs --key ExpressLRS/$GITHUB_SHA/firmware.zip > /dev/null || ALLOW_UPLOAD=true
+          aws s3api head-object --endpoint-url $AWS_ENDPOINT_URL --bucket kotrino --key RuLRS/$GITHUB_SHA/firmware.zip > /dev/null || ALLOW_UPLOAD=true
           git describe --tags --exact-match HEAD && ALLOW_UPLOAD=true
           if [ $ALLOW_UPLOAD ]; then
             echo "Uploading firmware to artifactory"
-            aws s3 cp --endpoint-url $AWS_ENDPOINT_URL firmware.zip s3://expresslrs/ExpressLRS/$GITHUB_SHA/firmware.zip
+            aws s3 cp --endpoint-url $AWS_ENDPOINT_URL firmware.zip s3://kotrino/RuLRS/$GITHUB_SHA/firmware.zip
 
             echo "Generating artifact index"
-            aws s3 ls --endpoint-url $AWS_ENDPOINT_URL s3://expresslrs/ExpressLRS/ | awk '{print $2}' | sed s/\\/// > /tmp/hashes
+            aws s3 ls --endpoint-url $AWS_ENDPOINT_URL s3://kotrino/RuLRS/ | awk '{print $2}' | sed s/\\/// > /tmp/hashes
             echo '{' > index.json
             echo '"branches": {' >> index.json
             git branch --list --remotes --format '"%(refname:short)": "%(objectname)",' | grep origin/ | sed s/origin.// | grep -f /tmp/hashes | head -c-2 >> index.json
@@ -213,7 +213,7 @@ jobs:
             echo '}' >> index.json
 
             echo "Uploading artifact index"
-            aws s3 cp --endpoint-url $AWS_ENDPOINT_URL index.json s3://expresslrs/ExpressLRS/index.json
+            aws s3 cp --endpoint-url $AWS_ENDPOINT_URL index.json s3://kotrino/RuLRS/index.json
           else
             echo "Not overwriting already existing artifact at $GITHUB_SHA"
             exit 1

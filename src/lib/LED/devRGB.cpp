@@ -423,13 +423,13 @@ static int timeout()
         }
 #endif
         // Set the color and we're done!
-        blinkyColor.h = ExpressLRS_currAirRate_Modparams->index * 256 / RATE_MAX;
+        blinkyColor.h = RuLRS_currAirRate_Modparams->index * 256 / RATE_MAX;
         blinkyColor.v = fmap(POWERMGNT::currPower(), 0, PWR_COUNT-1, 10, 128);
         WS281BsetLED(HsvToRgb(blinkyColor));
         return DURATION_NEVER;
     case tentative:
         // Set the color and we're done!
-        blinkyColor.h = ExpressLRS_currAirRate_Modparams->index * 256 / RATE_MAX;
+        blinkyColor.h = RuLRS_currAirRate_Modparams->index * 256 / RATE_MAX;
         blinkyColor.v = fmap(POWERMGNT::currPower(), 0, PWR_COUNT-1, 10, 50);
         WS281BsetLED(HsvToRgb(blinkyColor));
         return DURATION_NEVER;
@@ -438,7 +438,7 @@ static int timeout()
         blinkyColor.h = 10;
         return flashLED(blinkyColor, 192, 0, LEDSEQ_DISCONNECTED, sizeof(LEDSEQ_DISCONNECTED));
 #else
-        blinkyColor.h = ExpressLRS_currAirRate_Modparams->index * 256 / RATE_MAX;
+        blinkyColor.h = RuLRS_currAirRate_Modparams->index * 256 / RATE_MAX;
         brightnessFadeLED(blinkyColor, 0, 64);
         return NORMAL_UPDATE_INTERVAL;
 #endif

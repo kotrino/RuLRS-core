@@ -8,19 +8,45 @@
 #include <algorithm>
 
 #include <stdio.h>
-#include <unistd.h>
 #include <math.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <time.h>
+
+// Замена gettimeofday для Windows
+struct timeval {
+    long tv_sec;
+    long tv_usec;
+};
+
+inline int gettimeofday(struct timeval* tp, void* tzp) {
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+    uint64_t tt = ((uint64_t)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+    tt /= 10;
+    tt -= 11644473600000000ULL;
+    tp->tv_sec = tt / 1000000;
+    tp->tv_usec = tt % 1000000;
+    return 0;
+}
+
+#define delay(ms) Sleep(ms)
+#else
 #include <sys/time.h>
+#include <unistd.h>
+#define delay(ms) usleep(ms * 1000)
+#endif
 
 #define DEVICE_NAME "testing"
 #define RADIO_SX128X 1
 
-// fake pin definitions to satisfy the SX1280 library
+// Фиктивные определения пинов для библиотеки SX1280
 #define GPIO_PIN_BUSY UNDEF_PIN
 #define GPIO_PIN_NSS_2 UNDEF_PIN
 #define OPT_USE_HARDWARE_DCDC false
 
-// fake pin definition to satisfy th MSPVTX  library
+// Фиктивные определения пинов для библиотеки MSPVTX
 #define OPT_HAS_VTX_SPI false
 #define GPIO_PIN_SPI_VTX_NSS UNDEF_PIN
 
@@ -35,13 +61,13 @@ public:
     Stream() {}
     virtual ~Stream() {}
 
-    // Stream methods
+    // Методы потока
     virtual int available() = 0;
     virtual int read() = 0;
     virtual int peek() = 0;
     virtual void flush() = 0;
 
-    // Print methods
+    // Методы печати
     virtual size_t write(uint8_t c) = 0;
     virtual size_t write(const uint8_t *s, size_t l) = 0;
 
@@ -56,7 +82,7 @@ public:
 
 class HardwareSerial: public Stream {
 public:
-    // Stream methods
+    // Методы потока
     int available() {return 0;}
     int read() {return -1;}
     int peek() {return 0;}
@@ -66,7 +92,7 @@ public:
     void enableHalfDuplexRx() {}
     int availableForWrite() {return 256;}
 
-    // Print methods
+    // Методы печати
     size_t write(uint8_t c) {return 1;}
     size_t write(const uint8_t *s, size_t l) {return l;}
 

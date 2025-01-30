@@ -17,39 +17,39 @@
 extern WiFiMode_t wifiMode;
 
 const uint16_t *main_menu_icons[] = {
-    elrs_rate,
-    elrs_switch,
-    elrs_antenna,
-    elrs_power,
-    elrs_ratio,
-    elrs_motion,
-    elrs_fan,
-    elrs_joystick,
-    elrs_bind,
-    elrs_wifimode,
-    elrs_vtx,
+    rulrs_rate,
+    rulrs_switch,
+    rulrs_antenna,
+    rulrs_power,
+    rulrs_ratio,
+    rulrs_motion,
+    rulrs_fan,
+    rulrs_joystick,
+    rulrs_bind,
+    rulrs_wifimode,
+    rulrs_vtx,
 
-    elrs_power,
-    elrs_power,
+    rulrs_power,
+    rulrs_power,
 
-    elrs_vtx,
-    elrs_vtx,
-    elrs_vtx,
-    elrs_vtx,
-    elrs_vtx,
+    rulrs_vtx,
+    rulrs_vtx,
+    rulrs_vtx,
+    rulrs_vtx,
+    rulrs_vtx,
 
-    elrs_updatefw,
-    elrs_rxwifi,
-    elrs_backpack,
-    elrs_vrxwifi
+    rulrs_updatefw,
+    rulrs_rxwifi,
+    rulrs_backpack,
+    rulrs_vrxwifi
 };
 
 // Hex color code to 16-bit rgb:
 // color = 0x96c76f
 // rgb_hex = ((((color&0xFF0000)>>16)&0xf8)<<8) + ((((color&0x00FF00)>>8)&0xfc)<<3) + ((color&0x0000FF)>>3)
-constexpr uint16_t elrs_banner_bgColor[] = {
-    0x4315, // MSG_NONE          => #4361AA (ELRS blue)
-    0x9E2D, // MSG_CONNECTED     => #9FC76F (ELRS green)
+constexpr uint16_t rulrs_banner_bgColor[] = {
+    0x4315, // MSG_NONE          => #4361AA (RULRS blue)
+    0x9E2D, // MSG_CONNECTED     => #9FC76F (RULRS green)
     0xAA08, // MSG_ARMED         => #AA4343 (red)
     0xF501, // MSG_MISMATCH      => #F0A30A (amber)
     0xF800  // MSG_ERROR         => #F0A30A (very red)
@@ -182,7 +182,7 @@ void TFTDisplay::displaySplashScreen()
                     SCREEN_X - SCREEN_FONT_GAP*2, SCREEN_NORMAL_FONT_SIZE + INIT_PAGE_FONT_PADDING*2, BLACK);
 
     char buffer[50];
-    snprintf(buffer, sizeof(buffer), "ELRS-%.6s", version);
+    snprintf(buffer, sizeof(buffer), "RULRS-%.6s", version);
     displayFontCenter(INIT_PAGE_FONT_START_X, SCREEN_X - INIT_PAGE_FONT_START_X, INIT_PAGE_FONT_START_Y,
                         SCREEN_NORMAL_FONT_SIZE, SCREEN_NORMAL_FONT,
                         String(buffer), WHITE, BLACK);
@@ -199,8 +199,8 @@ void TFTDisplay::displayIdleScreen(uint8_t changed, uint8_t rate_index, uint8_t 
     if (changed & CHANGED_TEMP)
     {
         // Left side logo, version, and temp
-        gfx->fillRect(0, 0, SCREEN_X/2, SCREEN_Y, elrs_banner_bgColor[message_index]);
-        gfx->drawBitmap(IDLE_PAGE_START_X, IDLE_PAGE_START_Y, elrs_banner_bmp, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE,
+        gfx->fillRect(0, 0, SCREEN_X/2, SCREEN_Y, rulrs_banner_bgColor[message_index]);
+        gfx->drawBitmap(IDLE_PAGE_START_X, IDLE_PAGE_START_Y, rulrs_banner_bmp, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE,
                         WHITE);
 
         // Update the temperature
@@ -209,7 +209,7 @@ void TFTDisplay::displayIdleScreen(uint8_t changed, uint8_t rate_index, uint8_t 
         snprintf(buffer, sizeof(buffer), "%.6s %02d\367C", version, temperature);
         displayFontCenter(0, SCREEN_X/2, SCREEN_LARGE_ICON_SIZE + (SCREEN_Y - SCREEN_LARGE_ICON_SIZE - SCREEN_SMALL_FONT_SIZE)/2,
                             SCREEN_SMALL_FONT_SIZE, SCREEN_SMALL_FONT,
-                            String(buffer), WHITE, elrs_banner_bgColor[message_index]);
+                            String(buffer), WHITE, rulrs_banner_bgColor[message_index]);
     }
 
     // The Radio Params right half of the screen
@@ -286,7 +286,7 @@ void TFTDisplay::displayBLEConfirm()
 {
     gfx->fillScreen(WHITE);
 
-    gfx->draw16bitRGBBitmap(SUB_PAGE_ICON_START_X, SUB_PAGE_ICON_START_Y, elrs_joystick, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE);
+    gfx->draw16bitRGBBitmap(SUB_PAGE_ICON_START_X, SUB_PAGE_ICON_START_Y, rulrs_joystick, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE);
     displayFontCenter(SUB_PAGE_WORD_START_X, SCREEN_X, SUB_PAGE_WORD_START_Y1,  SCREEN_NORMAL_FONT_SIZE, SCREEN_NORMAL_FONT,
                         "PRESS TO", BLACK, WHITE);
     displayFontCenter(SUB_PAGE_WORD_START_X, SCREEN_X, SUB_PAGE_WORD_START_Y2,  SCREEN_NORMAL_FONT_SIZE, SCREEN_NORMAL_FONT,
@@ -299,7 +299,7 @@ void TFTDisplay::displayBLEStatus()
 {
     gfx->fillScreen(WHITE);
 
-    gfx->draw16bitRGBBitmap(SUB_PAGE_ICON_START_X, SUB_PAGE_ICON_START_Y, elrs_joystick, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE);
+    gfx->draw16bitRGBBitmap(SUB_PAGE_ICON_START_X, SUB_PAGE_ICON_START_Y, rulrs_joystick, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE);
     displayFontCenter(SUB_PAGE_WORD_START_X, SCREEN_X, SUB_PAGE_WORD_START_Y1,  SCREEN_NORMAL_FONT_SIZE, SCREEN_NORMAL_FONT,
                         "BLE", BLACK, WHITE);
     displayFontCenter(SUB_PAGE_WORD_START_X, SCREEN_X, SUB_PAGE_WORD_START_Y2,  SCREEN_NORMAL_FONT_SIZE, SCREEN_NORMAL_FONT,
@@ -312,7 +312,7 @@ void TFTDisplay::displayWiFiConfirm()
 {
     gfx->fillScreen(WHITE);
 
-    gfx->draw16bitRGBBitmap(SUB_PAGE_ICON_START_X, SUB_PAGE_ICON_START_Y, elrs_wifimode, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE);
+    gfx->draw16bitRGBBitmap(SUB_PAGE_ICON_START_X, SUB_PAGE_ICON_START_Y, rulrs_wifimode, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE);
     displayFontCenter(SUB_PAGE_WORD_START_X, SCREEN_X, SUB_PAGE_WORD_START_Y1,  SCREEN_NORMAL_FONT_SIZE, SCREEN_NORMAL_FONT,
                         "PRESS TO", BLACK, WHITE);
     displayFontCenter(SUB_PAGE_WORD_START_X, SCREEN_X, SUB_PAGE_WORD_START_Y2,  SCREEN_NORMAL_FONT_SIZE, SCREEN_NORMAL_FONT,
@@ -325,7 +325,7 @@ void TFTDisplay::displayWiFiStatus()
 {
     gfx->fillScreen(WHITE);
 
-    gfx->draw16bitRGBBitmap(SUB_PAGE_ICON_START_X, SUB_PAGE_ICON_START_Y, elrs_wifimode, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE);
+    gfx->draw16bitRGBBitmap(SUB_PAGE_ICON_START_X, SUB_PAGE_ICON_START_Y, rulrs_wifimode, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE);
     if (wifiMode == WIFI_STA) {
         String host_msg = String(wifi_hostname) + ".local";
         displayFontCenter(SUB_PAGE_WORD_START_X, SCREEN_X, SUB_PAGE_WORD_START_Y1,  SCREEN_NORMAL_FONT_SIZE, SCREEN_NORMAL_FONT,
@@ -350,7 +350,7 @@ void TFTDisplay::displayBindConfirm()
 {
     gfx->fillScreen(WHITE);
 
-    gfx->draw16bitRGBBitmap(SUB_PAGE_ICON_START_X, SUB_PAGE_ICON_START_Y, elrs_bind, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE);
+    gfx->draw16bitRGBBitmap(SUB_PAGE_ICON_START_X, SUB_PAGE_ICON_START_Y, rulrs_bind, SCREEN_LARGE_ICON_SIZE, SCREEN_LARGE_ICON_SIZE);
     displayFontCenter(SUB_PAGE_WORD_START_X, SCREEN_X, SUB_PAGE_WORD_START_Y1,  SCREEN_NORMAL_FONT_SIZE, SCREEN_NORMAL_FONT,
                         "PRESS TO", BLACK, WHITE);
     displayFontCenter(SUB_PAGE_WORD_START_X, SCREEN_X, SUB_PAGE_WORD_START_Y2,  SCREEN_NORMAL_FONT_SIZE, SCREEN_NORMAL_FONT,

@@ -9,7 +9,7 @@
 #include "logging.h"
 #include "MAVLink.h"
 
-#define BACKPACK_TIMEOUT 20    // How often to check for backpack commands
+#define BACKPACK_TIMEOUT 20    // Как часто проверять команды для backpack
 
 extern char backpackVersion[];
 extern bool headTrackingEnabled;
@@ -30,7 +30,7 @@ bool lastRecordingState = false;
 
 [[noreturn]] void startPassthrough()
 {
-    // stop everything
+    // остановить все процессы
     devicesStop();
     Radio.End();
     hwTimer::stop();
@@ -39,11 +39,11 @@ bool lastRecordingState = false;
     Stream *uplink = &CRSFHandset::Port;
 
     uint32_t baud = PASSTHROUGH_BAUD == -1 ? BACKPACK_LOGGING_BAUD : PASSTHROUGH_BAUD;
-    // get ready for passthrough
+    // подготовка к режиму passthrough
     if (GPIO_PIN_RCSIGNAL_RX == GPIO_PIN_RCSIGNAL_TX)
     {
         #if defined(PLATFORM_ESP32_S3)
-        // if UART0 is connected to the backpack then use the USB for the uplink
+        // если UART0 подключен к backpack, используем USB для uplink
         if (GPIO_PIN_DEBUG_RX == 44 && GPIO_PIN_DEBUG_TX == 43)
         {
             uplink = &Serial;
@@ -52,12 +52,12 @@ bool lastRecordingState = false;
         }
         else
         {
-            CRSFHandset::Port.begin(baud, SERIAL_8N1, 44, 43);  // pins are configured as 44 and 43
+            CRSFHandset::Port.begin(baud, SERIAL_8N1, 44, 43);  // пины настроены как 44 и 43
             CRSFHandset::Port.setTxBufferSize(1024);
             CRSFHandset::Port.setRxBufferSize(16384);
         }
         #else
-        CRSFHandset::Port.begin(baud, SERIAL_8N1, 3, 1);  // default pin configuration 3 and 1
+        CRSFHandset::Port.begin(baud, SERIAL_8N1, 3, 1);  // стандартная конфигурация пинов 3 и 1
         CRSFHandset::Port.setTxBufferSize(1024);
         CRSFHandset::Port.setRxBufferSize(16384);
         #endif
@@ -78,7 +78,7 @@ bool lastRecordingState = false;
     backpack->setRxBufferSize(1024);
     backpack->setTxBufferSize(16384);
 
-    // reset ESP8285 into bootloader mode
+    // сброс ESP8285 в режим загрузчика
     digitalWrite(GPIO_PIN_BACKPACK_BOOT, HIGH);
     delay(100);
     digitalWrite(GPIO_PIN_BACKPACK_EN, LOW);
@@ -95,7 +95,7 @@ bool lastRecordingState = false;
         backpack->readBytes(buf, sizeof(buf));
     }
 
-    // go hard!
+    // запуск основного цикла!
     for (;;)
     {
         int available_bytes = uplink->available();
@@ -124,19 +124,19 @@ static int debouncedRead(int pin) {
     if (current_state == last_state) {
         matches = min(min_matches, (uint8_t)(matches + 1));
     } else {
-        // We are bouncing. Reset the match counter.
+        // Обнаружены колебания сигнала (дребезг контактов). Сбрасываем счетчик стабильных состояний.
         matches = 0;
         DBGLN("Bouncing!, current state: %d, last_state: %d, matches: %d", current_state, last_state, matches);
     }
 
     if (matches == min_matches) {
-        // We have a stable state and report it.
+        // У нас есть стабильное состояние, возвращаем его
         return current_state;
     }
 
     last_state = current_state;
 
-    // We don't have a definitive state we could report.
+    // У нас нет определенного состояния для возврата
     return -1;
 }
 
@@ -152,7 +152,7 @@ void checkBackpackUpdate()
             }
         }
 #if defined(PLATFORM_ESP32_S3)
-        // Start passthrough mode if an Espressif resync packet is detected on the USB port
+        // Запускаем режим passthrough если обнаружен пакет ресинхронизации Espressif на USB порту
         static const uint8_t resync[] = {
             0xc0,0x00,0x08,0x24,0x00,0x00,0x00,0x00,0x00,0x07,0x07,0x12,0x20,0x55,0x55,0x55,0x55,
             0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55, 0x55,0x55,
@@ -184,7 +184,7 @@ static void BackpackWiFiToMSPOut(uint16_t command)
     packet.function = command;
     packet.addByte(0);
 
-    MSP::sendPacket(&packet, TxBackpack); // send to tx-backpack as MSP
+    MSP::sendPacket(&packet, TxBackpack); // отправка на tx-backpack как MSP
 }
 
 static void BackpackHTFlagToMSPOut(uint8_t arg)
@@ -192,10 +192,10 @@ static void BackpackHTFlagToMSPOut(uint8_t arg)
     mspPacket_t packet;
     packet.reset();
     packet.makeCommand();
-    packet.function = MSP_ELRS_BACKPACK_SET_HEAD_TRACKING;
+    packet.function = MSP_RULRS_BACKPACK_SET_HEAD_TRACKING;
     packet.addByte(arg);
 
-    MSP::sendPacket(&packet, TxBackpack); // send to tx-backpack as MSP
+    MSP::sendPacket(&packet, TxBackpack); // отправка на tx-backpack как MSP
 }
 
 void BackpackBinding()
@@ -203,7 +203,7 @@ void BackpackBinding()
     mspPacket_t packet;
     packet.reset();
     packet.makeCommand();
-    packet.function = MSP_ELRS_BIND;
+    packet.function = MSP_RULRS_BIND;
     for (unsigned b=0; b<UID_LEN; ++b)
     {
         packet.addByte(UID[b]);
@@ -243,7 +243,7 @@ static void AuxStateToMSPOut()
     mspPacket_t packet;
     packet.reset();
     packet.makeCommand();
-    packet.function = MSP_ELRS_BACKPACK_SET_RECORDING_STATE;
+    packet.function = MSP_RULRS_BACKPACK_SET_RECORDING_STATE;
     packet.addByte(recordingState);
     packet.addByte(delay & 0xFF); // delay byte 1
     packet.addByte(delay >> 8); // delay byte 2
@@ -268,7 +268,7 @@ void sendCRSFTelemetryToBackpack(uint8_t *data)
     mspPacket_t packet;
     packet.reset();
     packet.makeCommand();
-    packet.function = MSP_ELRS_BACKPACK_CRSF_TLM;
+    packet.function = MSP_RULRS_BACKPACK_CRSF_TLM;
 
     uint8_t size = CRSF_FRAME_SIZE(data[CRSF_TELEMETRY_LENGTH_INDEX]);
     if (size > CRSF_MAX_PACKET_LEN)
@@ -303,8 +303,8 @@ void sendConfigToBackpack()
     mspPacket_t packet;
     packet.reset();
     packet.makeCommand();
-    packet.function = MSP_ELRS_BACKPACK_CONFIG;
-    packet.addByte(MSP_ELRS_BACKPACK_CONFIG_TLM_MODE); // Backpack tlm mode
+    packet.function = MSP_RULRS_BACKPACK_CONFIG;
+    packet.addByte(MSP_RULRS_BACKPACK_CONFIG_TLM_MODE); // Backpack tlm mode
     packet.addByte(config.GetBackpackTlmMode());
     MSP::sendPacket(&packet, TxBackpack); // send to tx-backpack as MSP
 }
@@ -342,7 +342,7 @@ static int timeout()
     if (InBindingMode)
     {
         BackpackBinding();
-        return 1000;        // don't check for another second so we don't spam too hard :-)
+        return 1000;        // не проверять еще секунду, чтобы не спамить слишком часто
     }
 
     if (versionRequestTries < 10 && strlen(backpackVersion) == 0 && (lastVersionTryTime == 0 || millis() - lastVersionTryTime > 1000)) {
@@ -351,7 +351,7 @@ static int timeout()
         mspPacket_t out;
         out.reset();
         out.makeCommand();
-        out.function = MSP_ELRS_GET_BACKPACK_VERSION;
+        out.function = MSP_RULRS_GET_BACKPACK_VERSION;
         MSP::sendPacket(&out, TxBackpack);
         DBGLN("Sending get backpack version command");
     }
@@ -359,13 +359,13 @@ static int timeout()
     if (TxBackpackWiFiReadyToSend && connectionState < MODE_STATES)
     {
         TxBackpackWiFiReadyToSend = false;
-        BackpackWiFiToMSPOut(MSP_ELRS_SET_TX_BACKPACK_WIFI_MODE);
+        BackpackWiFiToMSPOut(MSP_RULRS_SET_TX_BACKPACK_WIFI_MODE);
     }
 
     if (VRxBackpackWiFiReadyToSend && connectionState < MODE_STATES)
     {
         VRxBackpackWiFiReadyToSend = false;
-        BackpackWiFiToMSPOut(MSP_ELRS_SET_VRX_BACKPACK_WIFI_MODE);
+        BackpackWiFiToMSPOut(MSP_RULRS_SET_VRX_BACKPACK_WIFI_MODE);
     }
 
     if (HTEnableFlagReadyToSend && connectionState < MODE_STATES)
@@ -387,7 +387,7 @@ static int event()
 {
     if (GPIO_PIN_BACKPACK_EN != UNDEF_PIN)
     {
-        // EN should be HIGH to be active
+        // EN должен быть HIGH для активности
         digitalWrite(GPIO_PIN_BACKPACK_EN, (config.GetBackpackDisable() || connectionState == bleJoystick || connectionState == wifiUpdate) ? LOW : HIGH);
     }
 

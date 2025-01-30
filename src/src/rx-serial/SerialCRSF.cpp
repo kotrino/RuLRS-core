@@ -32,7 +32,7 @@ void SerialCRSF::sendQueuedData(uint32_t maxBytesToSend)
 
 void SerialCRSF::queueLinkStatisticsPacket()
 {
-    // Note size of crsfLinkStatistics_t used, not full elrsLinkStatistics_t
+    // Note size of crsfLinkStatistics_t used, not full rulrsLinkStatistics_t
     constexpr uint8_t payloadLen = sizeof(crsfLinkStatistics_t);
 
     constexpr uint8_t outBuffer[] = {
@@ -88,8 +88,8 @@ uint32_t SerialCRSF::sendRCFrame(bool frameAvailable, bool frameMissed, uint32_t
         int32_t rssiDBM = CRSF::LinkStatistics.active_antenna == 0 ? -CRSF::LinkStatistics.uplink_RSSI_1 : -CRSF::LinkStatistics.uplink_RSSI_2;
 
         PackedRCdataOut.ch14 = UINT10_to_CRSF(fmap(CRSF::LinkStatistics.uplink_Link_quality, 0, 100, 0, 1023));
-        PackedRCdataOut.ch15 = UINT10_to_CRSF(map(constrain(rssiDBM, ExpressLRS_currAirRate_RFperfParams->RXsensitivity, -50),
-                                                   ExpressLRS_currAirRate_RFperfParams->RXsensitivity, -50, 0, 1023));
+        PackedRCdataOut.ch15 = UINT10_to_CRSF(map(constrain(rssiDBM, RuLRS_currAirRate_RFperfParams->RXsensitivity, -50),
+                                                   RuLRS_currAirRate_RFperfParams->RXsensitivity, -50, 0, 1023));
     }
 
     constexpr uint8_t outBuffer[] = {

@@ -4,7 +4,7 @@
 
 #include "oleddisplay.h"
 
-#include "XBMStrings.h" // Contains all the ELRS logos and animations for the UI
+#include "XBMStrings.h" // Contains all the RULRS logos and animations for the UI
 #include "options.h"
 #include "logging.h"
 #include "common.h"
@@ -80,7 +80,7 @@ void OLEDDisplay::displaySplashScreen()
         }
 
         char buffer[50];
-        snprintf(buffer, sizeof(buffer), "ELRS-%.6s", version);
+        snprintf(buffer, sizeof(buffer), "RULRS-%.6s", version);
         u8g2->setFont(u8g2_font_profont10_mr);
         drawCentered(60, buffer);
     }

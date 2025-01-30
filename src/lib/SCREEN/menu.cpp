@@ -83,8 +83,8 @@ static void displayIdleScreen(bool init)
         disp_message = MSG_NONE;
     }
 
-    // compute log2(ExpressLRS_currTlmDenom) (e.g. 128=7, 64=6, etc)
-    uint8_t tlmIdx = __builtin_ffs(ExpressLRS_currTlmDenom) - 1;
+    // compute log2(RuLRS_currTlmDenom) (e.g. 128=7, 64=6, etc)
+    uint8_t tlmIdx = __builtin_ffs(RuLRS_currTlmDenom) - 1;
     if (changed == 0)
     {
         changed |= last_message != disp_message ? CHANGED_ALL : 0;
@@ -204,7 +204,7 @@ static void incrementValueIndex(bool init)
     values_index = (values_index - values_min + 1) % values_count + values_min;
     if (state_machine.getParentState() == STATE_PACKET)
     {
-        while (get_elrs_airRateConfig(values_index)->interval < handset->getMinPacketInterval() || !isSupportedRFRate(values_index))
+        while (get_rulrs_airRateConfig(values_index)->interval < handset->getMinPacketInterval() || !isSupportedRFRate(values_index))
         {
             values_index = (values_index - values_min + 1) % values_count + values_min;
         }
@@ -217,7 +217,7 @@ static void decrementValueIndex(bool init)
     values_index = (values_index - values_min + values_count - 1) % values_count + values_min;
     if (state_machine.getParentState() == STATE_PACKET)
     {
-        while (get_elrs_airRateConfig(values_index)->interval < handset->getMinPacketInterval() || !isSupportedRFRate(values_index))
+        while (get_rulrs_airRateConfig(values_index)->interval < handset->getMinPacketInterval() || !isSupportedRFRate(values_index))
         {
             values_index = (values_index - values_min + values_count - 1) % values_count + values_min;
         }
@@ -232,14 +232,14 @@ static void saveValueIndex(bool init)
         case STATE_PACKET: {
             uint8_t actualRate = adjustPacketRateForBaud(val);
             uint8_t newSwitchMode = adjustSwitchModeForAirRate(
-                (OtaSwitchMode_e)config.GetSwitchMode(), get_elrs_airRateConfig(actualRate)->PayloadLength);
+                (OtaSwitchMode_e)config.GetSwitchMode(), get_rulrs_airRateConfig(actualRate)->PayloadLength);
             // If the switch mode is going to change, block the change while connected
             if (newSwitchMode == OtaSwitchModeCurrent || connectionState == disconnected)
             {
                 deferExecutionMillis(100, [actualRate, newSwitchMode](){
                     config.SetRate(actualRate);
                     config.SetSwitchMode(newSwitchMode);
-                    OtaUpdateSerializers((OtaSwitchMode_e)newSwitchMode, ExpressLRS_currAirRate_Modparams->PayloadLength);
+                    OtaUpdateSerializers((OtaSwitchMode_e)newSwitchMode, RuLRS_currAirRate_Modparams->PayloadLength);
                     SetSyncSpam();
                 });
             }
@@ -252,7 +252,7 @@ static void saveValueIndex(bool init)
             {
                 deferExecutionMillis(100, [val](){
                     config.SetSwitchMode(val);
-                    OtaUpdateSerializers((OtaSwitchMode_e)val, ExpressLRS_currAirRate_Modparams->PayloadLength);
+                    OtaUpdateSerializers((OtaSwitchMode_e)val, RuLRS_currAirRate_Modparams->PayloadLength);
                     SetSyncSpam();
                 });
             }

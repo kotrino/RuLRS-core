@@ -3,7 +3,7 @@ import os
 import shutil
 import upload_via_esp8266_backpack
 import esp_compress
-import elrs_helpers
+import rulrs_helpers
 import BFinitPassthrough
 import ETXinitPassthrough
 import UnifiedConfiguration
@@ -86,9 +86,9 @@ elif platform in ['espressif32']:
 if "_WIFI" in target_name:
     add_target_uploadoption("uploadconfirm", "Do not upload, just send confirm")
     if "_TX_" in target_name:
-        env.SetDefault(UPLOAD_PORT="elrs_tx.local")
+        env.SetDefault(UPLOAD_PORT="rulrs_tx.local")
     else:
-        env.SetDefault(UPLOAD_PORT="elrs_rx.local")
+        env.SetDefault(UPLOAD_PORT="rulrs_rx.local")
 
 if platform != 'native':
     add_target_uploadoption("uploadforce", "Upload even if target mismatch")
@@ -111,4 +111,4 @@ if platform in ['espressif32']:
 
 if platform in ['espressif32', 'espressif8266']:
     if not os.path.exists('hardware'):
-        elrs_helpers.git_cmd('clone', 'https://github.com/ExpressLRS/targets', 'hardware')
+        rulrs_helpers.git_cmd('clone', 'https://github.com/RuLRS/targets', 'hardware')

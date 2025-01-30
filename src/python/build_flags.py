@@ -6,7 +6,7 @@ import hashlib
 import fnmatch
 import time
 import re
-import elrs_helpers
+import rulrs_helpers
 
 build_flags = env.get('BUILD_FLAGS', [])
 json_flags = {}
@@ -19,7 +19,7 @@ isRX = True if '_RX_' in target_name else False
 def print_error(error):
     time.sleep(1)
     sys.stdout.write("\n\n\033[47;31m%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n")
-    sys.stdout.write("\033[47;31m!!!             ExpressLRS Warning Below             !!!\n")
+    sys.stdout.write("\033[47;31m!!!             RuLRS Warning Below             !!!\n")
     sys.stdout.write("\033[47;31m%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n")
     sys.stdout.write("\033[47;30m  %s \n" % error)
     sys.stdout.write("\033[47;31m%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n\n")
@@ -118,7 +118,7 @@ def condense_flags():
     build_flags = [x for x in build_flags if (x.strip() != "")] # remove any blank items
 
 def version_to_env():
-    ver = elrs_helpers.get_git_version()
+    ver = rulrs_helpers.get_git_version()
     env.Append(GIT_SHA = ver['sha'], GIT_VERSION= ver['version'])
 
 def string_to_ascii(str):

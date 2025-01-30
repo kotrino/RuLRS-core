@@ -55,7 +55,7 @@
 // by the Arduino core (see https://github.com/espressif/arduino-esp32/issues/9896) and fixed
 // by Espressif with Arduino core release 3.0.3 (see https://github.com/espressif/arduino-esp32/pull/9950)
 //
-// With availability of Arduino core 3.0.3 and upgrading ExpressLRS to Arduino core 3.0.3 the temporary fix
+// With availability of Arduino core 3.0.3 and upgrading RuLRS to Arduino core 3.0.3 the temporary fix
 // should be deleted again
 //
 // ARDUINO_CORE_INVERT_FIX PT1
@@ -103,7 +103,7 @@ uint8_t geminiMode = 0;
 
 PFD PFDloop;
 Crc2Byte ota_crc;
-ELRS_EEPROM eeprom;
+RULRS_EEPROM eeprom;
 RxConfig config;
 Telemetry telemetry;
 Stream *SerialLogger;
@@ -142,7 +142,7 @@ static uint8_t telemetryBurstCount;
 static uint8_t telemetryBurstMax;
 
 StubbornReceiver MspReceiver;
-uint8_t MspData[ELRS_MSP_BUFFER];
+uint8_t MspData[RULRS_MSP_BUFFER];
 
 uint8_t mavlinkSSBuffer[CRSF_MAX_PACKET_LEN]; // Buffer for current stubbon sender packet (mavlink only)
 
@@ -162,7 +162,7 @@ LPF LPF_UplinkRSSI1(5);
 MeanAccumulator<int32_t, int8_t, -16> SnrMean;
 
 static uint8_t scanIndex;
-uint8_t ExpressLRS_nextAirRateIndex;
+uint8_t RuLRS_nextAirRateIndex;
 int8_t SwitchModePending;
 
 int32_t PfdPrevRawOffset;
@@ -248,7 +248,7 @@ static uint8_t minLqForChaos()
     // FHSShopInterval * trunc((100 + (FHSShopInterval * numfhss) - 1) / (FHSShopInterval * numfhss))
     // With a interval of 4 this works out to: 2.4=4, FCC915=4, AU915=8, EU868=8, EU/AU433=36
     const uint32_t numfhss = FHSSgetChannelCount();
-    const uint8_t interval = ExpressLRS_currAirRate_Modparams->FHSShopInterval;
+    const uint8_t interval = RuLRS_currAirRate_Modparams->FHSShopInterval;
     return interval * ((interval * numfhss + 99) / (interval * numfhss));
 }
 
@@ -297,7 +297,7 @@ void ICACHE_RAM_ATTR getRFlinkInfo()
     CRSF::LinkStatistics.active_antenna = antenna;
     CRSF::LinkStatistics.uplink_SNR = SNR_DESCALE(Radio.LastPacketSNRRaw); // possibly overriden below
     //CRSF::LinkStatistics.uplink_Link_quality = uplinkLQ; // handled in Tick
-    CRSF::LinkStatistics.rf_Mode = ExpressLRS_currAirRate_Modparams->enum_rate;
+    CRSF::LinkStatistics.rf_Mode = RuLRS_currAirRate_Modparams->enum_rate;
     //DBGLN(CRSF::LinkStatistics.uplink_RSSI_1);
     #if defined(DEBUG_BF_LINK_STATS)
     CRSF::LinkStatistics.downlink_RSSI_1 = debug1;
@@ -315,8 +315,8 @@ void ICACHE_RAM_ATTR getRFlinkInfo()
 
 void SetRFLinkRate(uint8_t index, bool bindMode) // Set speed of RF link
 {
-    expresslrs_mod_settings_s *const ModParams = get_elrs_airRateConfig(index);
-    expresslrs_rf_pref_params_s *const RFperf = get_elrs_RFperfParams(index);
+    rulrs_mod_settings_s *const ModParams = get_rulrs_airRateConfig(index);
+    rulrs_rf_pref_params_s *const RFperf = get_rulrs_RFperfParams(index);
 
     // Binding always uses invertIQ
     bool invertIQ = bindMode || (UID[5] & 0x01);
@@ -360,23 +360,23 @@ void SetRFLinkRate(uint8_t index, bool bindMode) // Set speed of RF link
     }
 
     OtaUpdateSerializers(smWideOr8ch, ModParams->PayloadLength);
-    MspReceiver.setMaxPackageIndex(ELRS_MSP_MAX_PACKAGES);
-    TelemetrySender.setMaxPackageIndex(OtaIsFullRes ? ELRS8_TELEMETRY_MAX_PACKAGES : ELRS4_TELEMETRY_MAX_PACKAGES);
+    MspReceiver.setMaxPackageIndex(RULRS_MSP_MAX_PACKAGES);
+    TelemetrySender.setMaxPackageIndex(OtaIsFullRes ? RULRS8_TELEMETRY_MAX_PACKAGES : RULRS4_TELEMETRY_MAX_PACKAGES);
 
     // Wait for (11/10) 110% of time it takes to cycle through all freqs in FHSS table (in ms)
     cycleInterval = ((uint32_t)11U * FHSSgetChannelCount() * ModParams->FHSShopInterval * interval) / (10U * 1000U);
 
-    ExpressLRS_currAirRate_Modparams = ModParams;
-    ExpressLRS_currAirRate_RFperfParams = RFperf;
-    ExpressLRS_nextAirRateIndex = index; // presumably we just handled this
+    RuLRS_currAirRate_Modparams = ModParams;
+    RuLRS_currAirRate_RFperfParams = RFperf;
+    RuLRS_nextAirRateIndex = index; // presumably we just handled this
     telemBurstValid = false;
 }
 
 bool ICACHE_RAM_ATTR HandleFHSS()
 {
-    uint8_t modresultFHSS = (OtaNonce + 1) % ExpressLRS_currAirRate_Modparams->FHSShopInterval;
+    uint8_t modresultFHSS = (OtaNonce + 1) % RuLRS_currAirRate_Modparams->FHSShopInterval;
 
-    if ((ExpressLRS_currAirRate_Modparams->FHSShopInterval == 0) || alreadyFHSS == true || InBindingMode || (modresultFHSS != 0) || (connectionState == disconnected))
+    if ((RuLRS_currAirRate_Modparams->FHSShopInterval == 0) || alreadyFHSS == true || InBindingMode || (modresultFHSS != 0) || (connectionState == disconnected))
     {
         return false;
     }
@@ -385,7 +385,7 @@ bool ICACHE_RAM_ATTR HandleFHSS()
 
     if (geminiMode)
     {
-        if ((((OtaNonce + 1)/ExpressLRS_currAirRate_Modparams->FHSShopInterval) % 2 == 0) || FHSSuseDualBand) // When in DualBand do not switch between radios.  The OTA modulation paramters and HighFreq/LowFreq Tx amps are set during Config.
+        if ((((OtaNonce + 1)/RuLRS_currAirRate_Modparams->FHSShopInterval) % 2 == 0) || FHSSuseDualBand) // When in DualBand do not switch between radios.  The OTA modulation paramters and HighFreq/LowFreq Tx amps are set during Config.
         {
             Radio.SetFrequencyReg(FHSSgetNextFreq(), SX12XX_Radio_1);
             Radio.SetFrequencyReg(FHSSgetGeminiFreq(), SX12XX_Radio_2);
@@ -405,8 +405,8 @@ bool ICACHE_RAM_ATTR HandleFHSS()
 
 #if defined(RADIO_SX127X)
     // SX127x radio has to reset receive mode after hopping
-    uint8_t modresultTLM = (OtaNonce + 1) % ExpressLRS_currTlmDenom;
-    if (modresultTLM != 0 || ExpressLRS_currTlmDenom == 1) // if we are about to send a tlm response don't bother going back to rx
+    uint8_t modresultTLM = (OtaNonce + 1) % RuLRS_currTlmDenom;
+    if (modresultTLM != 0 || RuLRS_currTlmDenom == 1) // if we are about to send a tlm response don't bother going back to rx
     {
         Radio.RXnb();
     }
@@ -444,9 +444,9 @@ void ICACHE_RAM_ATTR LinkStatsToOta(OTA_LinkStats_s * const ls)
 
 bool ICACHE_RAM_ATTR HandleSendTelemetryResponse()
 {
-    uint8_t modresult = (OtaNonce + 1) % ExpressLRS_currTlmDenom;
+    uint8_t modresult = (OtaNonce + 1) % RuLRS_currTlmDenom;
 
-    if ((connectionState == disconnected) || (ExpressLRS_currTlmDenom == 1) || (alreadyTLMresp == true) || (modresult != 0) || !teamraceHasModelMatch)
+    if ((connectionState == disconnected) || (RuLRS_currTlmDenom == 1) || (alreadyTLMresp == true) || (modresult != 0) || !teamraceHasModelMatch)
     {
         return false; // don't bother sending tlm if disconnected or TLM is off
     }
@@ -608,20 +608,20 @@ bool ICACHE_RAM_ATTR HandleSendTelemetryResponse()
     // Gemini flips frequencies between radios on the rx side only.  This is to help minimise antenna cross polarization.
     // The payloads need to be switch when this happens.
     // GemX does not switch due to the time required to reconfigure the LR1121 params.
-    if (((OtaNonce + 1)/ExpressLRS_currAirRate_Modparams->FHSShopInterval) % 2 == 0 || !sendGeminiBuffer || FHSSuseDualBand)
+    if (((OtaNonce + 1)/RuLRS_currAirRate_Modparams->FHSShopInterval) % 2 == 0 || !sendGeminiBuffer || FHSSuseDualBand)
     {
-        Radio.TXnb((uint8_t*)&otaPkt, ExpressLRS_currAirRate_Modparams->PayloadLength, sendGeminiBuffer, (uint8_t*)&otaPktGemini, transmittingRadio);
+        Radio.TXnb((uint8_t*)&otaPkt, RuLRS_currAirRate_Modparams->PayloadLength, sendGeminiBuffer, (uint8_t*)&otaPktGemini, transmittingRadio);
     }
     else
     {
-        Radio.TXnb((uint8_t*)&otaPktGemini, ExpressLRS_currAirRate_Modparams->PayloadLength, sendGeminiBuffer, (uint8_t*)&otaPkt, transmittingRadio);
+        Radio.TXnb((uint8_t*)&otaPktGemini, RuLRS_currAirRate_Modparams->PayloadLength, sendGeminiBuffer, (uint8_t*)&otaPkt, transmittingRadio);
     }
 
     if (transmittingRadio == SX12XX_Radio_NONE)
     {
         // No packet will be sent due to LBT / Telem forced off.
         // Defer TXdoneCallback() to prepare for TLM when the IRQ is normally triggered.
-        deferExecutionMicros(ExpressLRS_currAirRate_RFperfParams->TOA, Radio.TXdoneCallback);
+        deferExecutionMicros(RuLRS_currAirRate_RFperfParams->TOA, Radio.TXdoneCallback);
     }
 
     return true;
@@ -724,12 +724,12 @@ void ICACHE_RAM_ATTR HWtimerCallbackTick() // this is 180 out of phase with the 
     // }
 
 
-    if (ExpressLRS_currAirRate_Modparams->numOfSends == 1)
+    if (RuLRS_currAirRate_Modparams->numOfSends == 1)
     {
         // Save the LQ value before the inc() reduces it by 1
         uplinkLQ = LQCalc.getLQ();
     } else
-    if (!((OtaNonce - 1) % ExpressLRS_currAirRate_Modparams->numOfSends))
+    if (!((OtaNonce - 1) % RuLRS_currAirRate_Modparams->numOfSends))
     {
         uplinkLQ = LQCalcDVDA.getLQ();
         LQCalcDVDA.inc();
@@ -836,7 +836,7 @@ void ICACHE_RAM_ATTR HWtimerCallbackTock()
 {
     PFDloop.intEvent(micros()); // our internal osc just fired
 
-    if (ExpressLRS_currAirRate_Modparams->numOfSends > 1 && !(OtaNonce % ExpressLRS_currAirRate_Modparams->numOfSends))
+    if (RuLRS_currAirRate_Modparams->numOfSends > 1 && !(OtaNonce % RuLRS_currAirRate_Modparams->numOfSends))
     {
         if (LQCalcDVDA.currentIsSet())
         {
@@ -849,7 +849,7 @@ void ICACHE_RAM_ATTR HWtimerCallbackTock()
             crsfRCFrameMissed();
         }
     }
-    else if (ExpressLRS_currAirRate_Modparams->numOfSends == 1)
+    else if (RuLRS_currAirRate_Modparams->numOfSends == 1)
     {
         if (!LQCalc.currentIsSet())
         {
@@ -884,7 +884,7 @@ void LostConnection(bool resumeRx)
 
     // Use this rate as the initial rate next time if we connected on it
     if (connectionState == connected)
-        config.SetRateInitialIdx(ExpressLRS_nextAirRateIndex);
+        config.SetRateInitialIdx(RuLRS_nextAirRateIndex);
 
     RFmodeCycleMultiplier = 1;
     setConnectionState(disconnected); //set lost connection
@@ -907,7 +907,7 @@ void LostConnection(bool resumeRx)
             while(micros() - PFDloop.getIntEventTime() > 250); // time it just after the tock()
             hwTimer::stop();
         }
-        SetRFLinkRate(ExpressLRS_nextAirRateIndex, false); // also sets to initialFreq
+        SetRFLinkRate(RuLRS_nextAirRateIndex, false); // also sets to initialFreq
         // If not resumRx, Radio will be left in SX127x_OPMODE_STANDBY / SX1280_MODE_STDBY_XOSC
         if (resumeRx)
         {
@@ -962,13 +962,13 @@ static void ICACHE_RAM_ATTR ProcessRfPacket_RC(OTA_Packet_s const * const otaPkt
     if (connectionState != connected || SwitchModePending)
         return;
 
-    bool telemetryConfirmValue = OtaUnpackChannelData(otaPktPtr, ChannelData, ExpressLRS_currTlmDenom);
+    bool telemetryConfirmValue = OtaUnpackChannelData(otaPktPtr, ChannelData, RuLRS_currTlmDenom);
     TelemetrySender.ConfirmCurrentPayload(telemetryConfirmValue);
 
     // No channels packets to the FC or PWM pins if no model match
     if (connectionHasModelMatch)
     {
-        if (ExpressLRS_currAirRate_Modparams->numOfSends == 1)
+        if (RuLRS_currAirRate_Modparams->numOfSends == 1)
         {
             crsfRCFrameAvailable();
             // teamrace is only checked for servos because the teamrace model select logic only runs
@@ -986,7 +986,7 @@ static void ICACHE_RAM_ATTR ProcessRfPacket_RC(OTA_Packet_s const * const otaPkt
     }
 }
 
-void ICACHE_RAM_ATTR OnELRSBindMSP(uint8_t* newUid4)
+void ICACHE_RAM_ATTR OnRuLRSBindMSP(uint8_t* newUid4)
 {
     // Binding over MSP only contains 4 bytes due to packet size limitations, clear out any leading bytes
     UID[0] = 0;
@@ -1019,7 +1019,7 @@ static void ICACHE_RAM_ATTR ProcessRfPacket_MSP(OTA_Packet_s const * const otaPk
         }
         else
         {
-            packageIndex &= ELRS8_TELEMETRY_MAX_PACKAGES;
+            packageIndex &= RULRS8_TELEMETRY_MAX_PACKAGES;
         }
     }
     else
@@ -1033,15 +1033,15 @@ static void ICACHE_RAM_ATTR ProcessRfPacket_MSP(OTA_Packet_s const * const otaPk
         }
         else
         {
-            packageIndex &= ELRS4_TELEMETRY_MAX_PACKAGES;
+            packageIndex &= RULRS4_TELEMETRY_MAX_PACKAGES;
         }
     }
 
     // Always examine MSP packets for bind information if in bind mode
     // [1] is the package index, first packet of the MSP
-    if (InBindingMode && packageIndex == 1 && payload[0] == MSP_ELRS_BIND)
+    if (InBindingMode && packageIndex == 1 && payload[0] == MSP_RULRS_BIND)
     {
-        OnELRSBindMSP((uint8_t *)&payload[1]);
+        OnRuLRSBindMSP((uint8_t *)&payload[1]);
         return;
     }
 
@@ -1125,16 +1125,16 @@ static bool ICACHE_RAM_ATTR ProcessRfPacket_SYNC(uint32_t const now, OTA_Sync_s 
     }
 
     // Will change the packet air rate in loop() if this changes
-    ExpressLRS_nextAirRateIndex = enumRatetoIndex((expresslrs_RFrates_e)otaSync->rfRateEnum);
+    RuLRS_nextAirRateIndex = enumRatetoIndex((rulrs_RFrates_e)otaSync->rfRateEnum);
     updateSwitchModePendingFromOta(otaSync->switchEncMode);
 
     // Update TLM ratio, should never be TLM_RATIO_STD/DISARMED, the TX calculates the correct value for the RX
-    expresslrs_tlm_ratio_e TLMrateIn = (expresslrs_tlm_ratio_e)(otaSync->newTlmRatio + (uint8_t)TLM_RATIO_NO_TLM);
+    rulrs_tlm_ratio_e TLMrateIn = (rulrs_tlm_ratio_e)(otaSync->newTlmRatio + (uint8_t)TLM_RATIO_NO_TLM);
     uint8_t TlmDenom = TLMratioEnumToValue(TLMrateIn);
-    if (ExpressLRS_currTlmDenom != TlmDenom)
+    if (RuLRS_currTlmDenom != TlmDenom)
     {
         DBGLN("New TLMrate 1:%u", TlmDenom);
-        ExpressLRS_currTlmDenom = TlmDenom;
+        RuLRS_currTlmDenom = TlmDenom;
         telemBurstValid = false;
     }
 
@@ -1317,14 +1317,14 @@ void MspReceiveComplete()
 {
     switch (MspData[0])
     {
-    case MSP_ELRS_SET_RX_WIFI_MODE: //0x0E
+    case MSP_RULRS_SET_RX_WIFI_MODE: //0x0E
         // The MSP packet needs to be ACKed so the TX doesn't
         // keep sending it, so defer the switch to wifi
         deferExecutionMillis(500, []() {
             setWifiUpdateMode();
         });
         break;
-    case MSP_ELRS_MAVLINK_TLM: // 0xFD
+    case MSP_RULRS_MAVLINK_TLM: // 0xFD
         // raw mavlink data
         mavlinkOutputBuffer.atomicPushBytes(&MspData[2], MspData[1]);
         break;
@@ -1334,7 +1334,7 @@ void MspReceiveComplete()
         switch (receivedHeader->type)
         {
         case CRSF_FRAMETYPE_MSP_WRITE: //encapsulated MSP payload
-            if (MspData[7] == MSP_SET_RX_CONFIG && MspData[8] == MSP_ELRS_MODEL_ID)
+            if (MspData[7] == MSP_SET_RX_CONFIG && MspData[8] == MSP_RULRS_MODEL_ID)
             {
                 UpdateModelMatch(MspData[9]);
                 break;
@@ -1734,11 +1734,11 @@ static void updateTelemetryBurst()
         return;
     telemBurstValid = true;
 
-    uint16_t hz = 1000000 / ExpressLRS_currAirRate_Modparams->interval;
-    telemetryBurstMax = TLMBurstMaxForRateRatio(hz, ExpressLRS_currTlmDenom);
+    uint16_t hz = 1000000 / RuLRS_currAirRate_Modparams->interval;
+    telemetryBurstMax = TLMBurstMaxForRateRatio(hz, RuLRS_currTlmDenom);
 
     // Notify the sender to adjust its expected throughput
-    TelemetrySender.UpdateTelemetryRate(hz, ExpressLRS_currTlmDenom, telemetryBurstMax);
+    TelemetrySender.UpdateTelemetryRate(hz, RuLRS_currTlmDenom, telemetryBurstMax);
 }
 
 /* If not connected will rotate through the RF modes looking for sync
@@ -1761,12 +1761,12 @@ static void cycleRfMode(unsigned long now)
         // Display the current air rate to the user as an indicator something is happening
         scanIndex++;
         Radio.RXnb();
-        DBGLN("%u", ExpressLRS_currAirRate_Modparams->interval);
+        DBGLN("%u", RuLRS_currAirRate_Modparams->interval);
 
         // Skip unsupported modes for hardware with only a single LR1121 or with a single RF path
         while (!isSupportedRFRate(scanIndex % RATE_MAX))
         {
-            DBGLN("Skip %u", get_elrs_airRateConfig(scanIndex % RATE_MAX)->interval);
+            DBGLN("Skip %u", get_rulrs_airRateConfig(scanIndex % RATE_MAX)->interval);
             scanIndex++;
         }
 
@@ -1848,7 +1848,7 @@ static void updateBindingMode(unsigned long now)
     else if (InBindingMode && (now - BindingRateChangeTime) > BindingRateChangeCyclePeriod)
     {
         BindingRateChangeTime = now;
-        if (ExpressLRS_currAirRate_Modparams->index == RATE_DUALBAND_BINDING)
+        if (RuLRS_currAirRate_Modparams->index == RATE_DUALBAND_BINDING)
         {
             SetRFLinkRate(enumRatetoIndex(RATE_BINDING), true);
         }
@@ -2031,7 +2031,7 @@ static void updateSwitchMode()
     if (SwitchModePending <= 0)
         return;
 
-    OtaUpdateSerializers((OtaSwitchMode_e)(SwitchModePending - 1), ExpressLRS_currAirRate_Modparams->PayloadLength);
+    OtaUpdateSerializers((OtaSwitchMode_e)(SwitchModePending - 1), RuLRS_currAirRate_Modparams->PayloadLength);
     SwitchModePending = 0;
 }
 
@@ -2145,7 +2145,7 @@ void setup()
             // RFnoiseFloor = MeasureNoiseFloor(); //TODO move MeasureNoiseFloor to driver libs
             // DBGLN("RF noise floor: %d dBm", RFnoiseFloor);
 
-            MspReceiver.SetDataToReceive(MspData, ELRS_MSP_BUFFER);
+            MspReceiver.SetDataToReceive(MspData, RULRS_MSP_BUFFER);
             Radio.RXnb();
             hwTimer::init(HWtimerCallbackTick, HWtimerCallbackTock);
         }
@@ -2198,13 +2198,13 @@ void loop()
         return;
     }
 
-    if ((connectionState != disconnected) && (ExpressLRS_currAirRate_Modparams->index != ExpressLRS_nextAirRateIndex)) // forced change
+    if ((connectionState != disconnected) && (RuLRS_currAirRate_Modparams->index != RuLRS_nextAirRateIndex)) // forced change
     {
-        DBGLN("Req air rate change %u->%u", ExpressLRS_currAirRate_Modparams->index, ExpressLRS_nextAirRateIndex);
-        if (!isSupportedRFRate(ExpressLRS_nextAirRateIndex))
+        DBGLN("Req air rate change %u->%u", RuLRS_currAirRate_Modparams->index, RuLRS_nextAirRateIndex);
+        if (!isSupportedRFRate(RuLRS_nextAirRateIndex))
         {
-            DBGLN("Mode %u not supported, ignoring", ExpressLRS_nextAirRateIndex);
-            ExpressLRS_nextAirRateIndex = ExpressLRS_currAirRate_Modparams->index;
+            DBGLN("Mode %u not supported, ignoring", RuLRS_nextAirRateIndex);
+            RuLRS_nextAirRateIndex = RuLRS_currAirRate_Modparams->index;
         }
         LostConnection(true);
         LastSyncPacket = now;           // reset this variable to stop rf mode switching and add extra time
@@ -2213,7 +2213,7 @@ void loop()
         SendLinkStatstoFCForcedSends = 2;
     }
 
-    if (connectionState == tentative && (now - LastSyncPacket > ExpressLRS_currAirRate_RFperfParams->RxLockTimeoutMs))
+    if (connectionState == tentative && (now - LastSyncPacket > RuLRS_currAirRate_RFperfParams->RxLockTimeoutMs))
     {
         DBGLN("Bad sync, aborting");
         LostConnection(true);
@@ -2224,7 +2224,7 @@ void loop()
     cycleRfMode(now);
 
     uint32_t localLastValidPacket = LastValidPacket; // Required to prevent race condition due to LastValidPacket getting updated from ISR
-    if ((connectionState == connected) && ((int32_t)ExpressLRS_currAirRate_RFperfParams->DisconnectTimeoutMs < (int32_t)(now - localLastValidPacket))) // check if we lost conn.
+    if ((connectionState == connected) && ((int32_t)RuLRS_currAirRate_RFperfParams->DisconnectTimeoutMs < (int32_t)(now - localLastValidPacket))) // check if we lost conn.
     {
         LostConnection(true);
     }

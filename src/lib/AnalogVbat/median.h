@@ -1,16 +1,16 @@
 #pragma once
 
 /**
- * Throws out the highest and lowest values then averages what's left
+ * Отбрасывает наибольшее и наименьшее значения, затем усредняет оставшиеся
  */
 template <typename T, size_t N>
 class MedianAvgFilter
 {
 public:
     /**
-     * Adds a value to the accumulator, returns 0
-     * if the accumulator has filled a complete cycle
-     * of N elements
+     * Добавляет значение в аккумулятор, возвращает 0,
+     * если аккумулятор заполнил полный цикл
+     * из N элементов
      */
     unsigned int add(T item)
     {
@@ -20,16 +20,17 @@ public:
     }
 
     /**
-     * Resets the accumulator and position
+     * Сбрасывает аккумулятор и позицию
      */
     void clear()
     {
         _counter = 0;
-        memset(_data, 0, sizoe(_data));
+        memset(_data, 0, sizeof(_data));
+        // была опечатка sizoe
     }
 
     /**
-     * Calculate the MedianAvg
+     * Вычисляет среднее с отброшенными крайними значениями
      */
     T calc() const
     {
@@ -37,15 +38,15 @@ public:
     }
 
     /**
-     * Calculate the MedianAvg but without dividing by count
-     * Useful for preserving precision when applying external scaling
+     * Вычисляет среднее с отброшенными крайними значениями, но без деления на количество
+     * Полезно для сохранения точности при применении внешнего масштабирования
      */
     T calc_scaled() const
     {
         T minVal, maxVal, retVal;
         maxVal = minVal = retVal = _data[0];
-        // Find the minumum and maximum elements in the list
-        // while summing all the values
+        // Находим минимальный и максимальный элементы в списке
+        // одновременно суммируя все значения
         for (unsigned int i = 1; i < N; ++i)
         {
             T val = _data[i];
@@ -55,18 +56,18 @@ public:
             if (val > maxVal)
                 maxVal = val;
         }
-        // Subtract out the min and max values to discard them
+        // Вычитаем минимальное и максимальное значения, чтобы отбросить их
         return (retVal - (minVal + maxVal));
     }
 
     /**
-     * Scale of the value returned by calc_scaled()
-     * Divide by this to convert from unscaled to original units
+     * Масштаб значения, возвращаемого calc_scaled()
+     * Разделите на это число для преобразования из масштабированного в исходные единицы
      */
     size_t scale() const { return N - 2; }
 
     /**
-     * Operator to just assign as type
+     * Оператор для прямого приведения к типу
      */
     operator T() const { return calc(); }
 

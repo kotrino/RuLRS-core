@@ -27,6 +27,8 @@ uint8_t WifiJoystick::channelCount = JOYSTICK_DEFAULT_CHANNEL_COUNT;
 bool WifiJoystick::active = false;
 uint8_t WifiJoystick::failedCount = 0;
 
+const uint8_t DEVICE_IDENTIFIER[] = {'R', 'L', 'R', 'S'};
+
 static inline uint16_t htole16(uint16_t val)
 {
 #if (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
@@ -64,9 +66,9 @@ void WifiJoystick::StartSending(const IPAddress& ip, int32_t updateInterval, uin
         return;
     }
 
-    // RF should already be shut down if in wifi mode
-    // Adjust the timer to run at the requested interval
-    // with a hard lower limit of 1000Hz
+    // RF должен быть уже выключен, если в режиме wifi
+    // Настроить таймер на работу с запрошенным интервалом
+    // с жестким нижним пределом 1000Гц
     if (updateInterval == 0 || updateInterval < 1000)
     {
         updateInterval = JOYSTICK_DEFAULT_UPDATE_INTERVAL;
@@ -100,20 +102,20 @@ void WifiJoystick::Loop(unsigned long now)
        return;
     }
 
-    // Advertise the existance of the server via broadcast
+    // Оповещение о существовании сервера через широковещательную рассылку
     constexpr unsigned BROADCAST_INTERVAL = 5000U;
     if (now - last > BROADCAST_INTERVAL)
     {
         last = now;
 
-        struct ElrsUdpAdvertisement_s {
-            uint32_t magic;     // char[4] = ['E', 'L', 'R', 'S']
-            uint8_t version;    // JOYSTICK_VERSION
-            uint16_t port;      // JOYSTICK_PORT, little endian
-            uint8_t name_len;   // length of the device name that follows
-            char name[0];       // device name
+        struct RulrsUdpAdvertisement_s {
+            uint32_t magic;     // магическое число char[4] = ['R', 'L', 'R', 'S']
+            uint8_t version;    // версия JOYSTICK_VERSION
+            uint16_t port;      // порт JOYSTICK_PORT, little endian
+            uint8_t name_len;   // длина имени устройства, которое следует далее
+            char name[0];       // имя устройства
         } PACKED eua = {
-            .magic = htobe32(0x454C5253), // always big-endian so ELRS is in order
+            .magic = htobe32(0x524C5253), // 'RLRS' в big-endian порядке
             .version = JOYSTICK_VERSION,
             .port = htole16(JOYSTICK_PORT),
             .name_len = (uint8_t)strlen(device_name)
@@ -144,7 +146,8 @@ void WifiJoystick::UpdateValues()
         udp->write((uint8_t*)&channel, 2);
     }
 
-    // check if sending failed, don't stop sending after the first error since transient errors can happen
+    // проверить, не произошла ли ошибка отправки, не прекращать отправку после первой ошибки,
+    // так как могут возникать временные ошибки
     if (udp->endPacket() == 0)
     {
         failedCount++;

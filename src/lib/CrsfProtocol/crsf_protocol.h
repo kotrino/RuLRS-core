@@ -71,7 +71,7 @@ typedef enum : uint8_t
     CRSF_FRAMETYPE_PARAMETER_READ = 0x2C,
     CRSF_FRAMETYPE_PARAMETER_WRITE = 0x2D,
 
-    //CRSF_FRAMETYPE_ELRS_STATUS = 0x2E, ELRS good/bad packet count and status flags
+    //CRSF_FRAMETYPE_RULRS_STATUS = 0x2E, RULRS good/bad packet count and status flags
 
     CRSF_FRAMETYPE_COMMAND = 0x32,
     // KISS frames
@@ -103,7 +103,7 @@ enum {
 enum {
     CRSF_FRAME_GPS_PAYLOAD_SIZE = 15,
     CRSF_FRAME_VARIO_PAYLOAD_SIZE = 2,
-    CRSF_FRAME_BARO_ALTITUDE_PAYLOAD_SIZE = 4, // TBS version is 2, ELRS is 4 (combines vario)
+    CRSF_FRAME_BARO_ALTITUDE_PAYLOAD_SIZE = 4, // TBS version is 2, RULRS is 4 (combines vario)
     CRSF_FRAME_BATTERY_SENSOR_PAYLOAD_SIZE = 8,
     CRSF_FRAME_ATTITUDE_PAYLOAD_SIZE = 6,
     CRSF_FRAME_DEVICE_INFO_PAYLOAD_SIZE = 48,
@@ -126,7 +126,7 @@ typedef enum : uint8_t
     CRSF_ADDRESS_RADIO_TRANSMITTER = 0xEA,
     CRSF_ADDRESS_CRSF_RECEIVER = 0xEC,
     CRSF_ADDRESS_CRSF_TRANSMITTER = 0xEE,
-    CRSF_ADDRESS_ELRS_LUA = 0xEF
+    CRSF_ADDRESS_RULRS_LUA = 0xEF
 } crsf_addr_e;
 
 //typedef struct crsf_addr_e asas;
@@ -153,8 +153,8 @@ typedef enum : uint8_t
 
 // These flags are or'ed with the field type above to hide the field from the normal LUA view
 #define CRSF_FIELD_HIDDEN       0x80     // marked as hidden in all LUA responses
-#define CRSF_FIELD_ELRS_HIDDEN  0x40     // marked as hidden when talking to ELRS specific LUA
-#define CRSF_FIELD_TYPE_MASK    ~(CRSF_FIELD_HIDDEN|CRSF_FIELD_ELRS_HIDDEN)
+#define CRSF_FIELD_RULRS_HIDDEN  0x40     // marked as hidden when talking to RULRS specific LUA
+#define CRSF_FIELD_TYPE_MASK    ~(CRSF_FIELD_HIDDEN|CRSF_FIELD_RULRS_HIDDEN)
 
 /**
  * Define the shape of a standard header
@@ -227,7 +227,7 @@ typedef struct deviceInformationPacket_s
 #define DEVICE_INFORMATION_LENGTH (sizeof(crsf_ext_header_t) + DEVICE_INFORMATION_PAYLOAD_LENGTH + CRSF_FRAME_CRC_SIZE)
 #define DEVICE_INFORMATION_FRAME_SIZE (DEVICE_INFORMATION_PAYLOAD_LENGTH + CRSF_FRAME_LENGTH_EXT_TYPE_CRC)
 
-// https://github.com/betaflight/betaflight/blob/master/src/main/msp/msp.c#L1949
+// https://github.com/kotrino/RuLRS/blob/main/src/main/msp/msp.c#L1949
 typedef struct mspVtxConfigPacket_s
 {
     uint8_t vtxType;
@@ -363,10 +363,10 @@ typedef struct crsfPayloadLinkstatistics_s
     int8_t downlink_SNR;
 } PACKED crsfLinkStatistics_t;
 
-typedef struct elrsLinkStatistics_s : crsfLinkStatistics_t
+typedef struct rulrsLinkStatistics_s : crsfLinkStatistics_t
 {
     uint8_t downlink_RSSI_2;
-} PACKED elrsLinkStatistics_t;
+} PACKED rulrsLinkStatistics_t;
 
 // typedef struct crsfOpenTXsyncFrame_s
 // {

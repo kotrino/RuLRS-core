@@ -43,12 +43,12 @@ void test_crc_implementation_compatibility(uint8_t crcbits, uint16_t poly, uint8
 
 void test_crc14_implementation_compatibility(void)
 {
-    test_crc_implementation_compatibility(14, ELRS_CRC14_POLY, 7);
+    test_crc_implementation_compatibility(14, RULRS_CRC14_POLY, 7);
 }
 
 void test_crc16_implementation_compatibility(void)
 {
-    test_crc_implementation_compatibility(16, ELRS_CRC16_POLY, 11);
+    test_crc_implementation_compatibility(16, RULRS_CRC16_POLY, 11);
 }
 
 void test_crc_flip_random(uint8_t crcbits, uint16_t poly, uint8_t testlen, int flip)
@@ -91,12 +91,12 @@ void test_crc_flip_random(uint8_t crcbits, uint16_t poly, uint8_t testlen, int f
 
 void test_crc14_flip_random(int flip)
 {
-    test_crc_flip_random(14, ELRS_CRC14_POLY, 7, flip);
+    test_crc_flip_random(14, RULRS_CRC14_POLY, 7, flip);
 }
 
 void test_crc16_flip_random(int flip)
 {
-    test_crc_flip_random(16, ELRS_CRC16_POLY, 11, flip);
+    test_crc_flip_random(16, RULRS_CRC16_POLY, 11, flip);
 }
 
 void test_crc_flip_sequential(uint8_t crcbits, uint16_t poly, uint8_t testlen, int flip)
@@ -139,12 +139,12 @@ void test_crc_flip_sequential(uint8_t crcbits, uint16_t poly, uint8_t testlen, i
 
 void test_crc14_flip_sequential(int flip)
 {
-    test_crc_flip_sequential(14, ELRS_CRC14_POLY, 7, flip);
+    test_crc_flip_sequential(14, RULRS_CRC14_POLY, 7, flip);
 }
 
 void test_crc16_flip_sequential(int flip)
 {
-    test_crc_flip_sequential(16, ELRS_CRC16_POLY, 11, flip);
+    test_crc_flip_sequential(16, RULRS_CRC16_POLY, 11, flip);
 }
 
 void test_crc_flip_within(uint8_t crcbits, uint16_t poly, uint8_t testlen, int flip)
@@ -190,12 +190,12 @@ void test_crc_flip_within(uint8_t crcbits, uint16_t poly, uint8_t testlen, int f
 
 void test_crc14_flip_within(int flip)
 {
-    test_crc_flip_within(14, ELRS_CRC14_POLY, 7, flip);
+    test_crc_flip_within(14, RULRS_CRC14_POLY, 7, flip);
 }
 
 void test_crc16_flip_within(int flip)
 {
-    test_crc_flip_within(16, ELRS_CRC16_POLY, 11, flip);
+    test_crc_flip_within(16, RULRS_CRC16_POLY, 11, flip);
 }
 
 void test_crc_flip5(uint8_t crcbits, uint16_t poly, uint8_t testlen)
@@ -252,12 +252,12 @@ void test_crc_flip5(uint8_t crcbits, uint16_t poly, uint8_t testlen)
 
 void test_crc14_flip5(void)
 {
-    test_crc_flip5(14, ELRS_CRC14_POLY, 7);
+    test_crc_flip5(14, RULRS_CRC14_POLY, 7);
 }
 
 void test_crc16_flip5(void)
 {
-    test_crc_flip5(16, ELRS_CRC16_POLY, 11);
+    test_crc_flip5(16, RULRS_CRC16_POLY, 11);
 }
 
 void test_crc8(void)
@@ -267,10 +267,10 @@ void test_crc8(void)
     for (int i = 0; i < sizeof(bytes); i++)
         bytes[i] = random() % 255;
 
-    uCRC_t ccrc = uCRC_t("CRC8", 8, ELRS_CRC_POLY, 0, false, false, 0);
+    uCRC_t ccrc = uCRC_t("CRC8", 8, RULRS_CRC_POLY, 0, false, false, 0);
     uint64_t crc = ccrc.get_raw_crc(bytes, 7, 0);
 
-    GENERIC_CRC8 ecrc = GENERIC_CRC8(ELRS_CRC_POLY);
+    GENERIC_CRC8 ecrc = GENERIC_CRC8(RULRS_CRC_POLY);
     uint16_t c = ecrc.calc(bytes, 7);
 
     TEST_ASSERT_EQUAL_MESSAGE((int)(crc & 0xFF), c, genMsg(bytes, sizeof(bytes)));

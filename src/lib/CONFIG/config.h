@@ -1,7 +1,7 @@
 #pragma once
 
 #include "targets.h"
-#include "elrs_eeprom.h"
+#include "rulrs_eeprom.h"
 #include "options.h"
 #include "common.h"
 
@@ -82,14 +82,14 @@ typedef enum {
 
 typedef struct {
     uint32_t        version;
-    uint8_t         vtxBand;    // 0=Off, else band number
+    uint8_t         vtxBand;    // 0=Off, иначе номер полосы
     uint8_t         vtxChannel; // 0=Ch1 -> 7=Ch8
-    uint8_t         vtxPower;   // 0=Do not set, else power number
+    uint8_t         vtxPower;   // 0=Не устанавливайте, иначе номер мощности
     uint8_t         vtxPitmode; // Off/On/AUX1^/AUX1v/etc
-    uint8_t         powerFanThreshold:4; // Power level to enable fan if present
+    uint8_t         powerFanThreshold:4; // Уровень мощности для включения вентилятора, если он есть.
     model_config_t  model_config[CONFIG_TX_MODEL_CNT];
-    uint8_t         fanMode;            // some value used by thermal?
-    uint8_t         motionMode:2,       // bool, but space for 2 more modes
+    uint8_t         fanMode;            // какое-то значение, используемое термическим?
+    uint8_t         motionMode:2,       // bool, Но пространство для еще 2 режимов
                     dvrStopDelay:3,
                     backpackDisable:1,  // bool, disable backpack via EN pin if available
                     backpackTlmMode:2;  // 0=Off, 1=Fwd tlm via espnow, 2=fwd tlm via wifi 3=(FUTURE) bluetooth
@@ -146,7 +146,7 @@ public:
     void SetLinkMode(uint8_t linkMode);
     void SetModelMatch(bool modelMatch);
     void SetDefaults(bool commit);
-    void SetStorageProvider(ELRS_EEPROM *eeprom);
+    void SetStorageProvider(RULRS_EEPROM *eeprom);
     void SetVtxBand(uint8_t vtxBand);
     void SetVtxChannel(uint8_t vtxChannel);
     void SetVtxPower(uint8_t vtxPower);
@@ -174,7 +174,7 @@ private:
 #endif
 
     tx_config_t m_config;
-    ELRS_EEPROM *m_eeprom;
+    RULRS_EEPROM *m_eeprom;
     uint32_t     m_modified;
     model_config_t *m_model;
     uint8_t     m_modelId;
@@ -282,7 +282,7 @@ public:
     void SetPower(uint8_t power);
     void SetAntennaMode(uint8_t antennaMode);
     void SetDefaults(bool commit);
-    void SetStorageProvider(ELRS_EEPROM *eeprom);
+    void SetStorageProvider(RULRS_EEPROM *eeprom);
     void SetPwmChannel(uint8_t ch, uint16_t failsafe, uint8_t inputCh, bool inverted, uint8_t mode, bool narrow);
     void SetPwmChannelRaw(uint8_t ch, uint32_t raw);
     void SetForceTlmOff(bool forceTlmOff);
@@ -309,7 +309,7 @@ private:
     void UpgradeEepromV9();
 
     rx_config_t m_config;
-    ELRS_EEPROM *m_eeprom;
+    RULRS_EEPROM *m_eeprom;
     uint32_t    m_modified;
 };
 

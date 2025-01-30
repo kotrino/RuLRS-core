@@ -159,11 +159,11 @@ static struct luaItem_command luaBind = {
 };
 
 static struct luaItem_string luaInfo = {
-    {"Bad/Good", (crsf_value_type_e)(CRSF_INFO | CRSF_FIELD_ELRS_HIDDEN)},
+    {"Bad/Good", (crsf_value_type_e)(CRSF_INFO | CRSF_FIELD_RULRS_HIDDEN)},
     STR_EMPTYSPACE
 };
 
-static struct luaItem_string luaELRSversion = {
+static struct luaItem_string luaRuLRSversion = {
     {version_domain, CRSF_INFO},
     commit
 };
@@ -321,13 +321,13 @@ static void luadevUpdateModelID() {
 
 static void luadevUpdateTlmBandwidth()
 {
-  expresslrs_tlm_ratio_e eRatio = (expresslrs_tlm_ratio_e)config.GetTlm();
+  rulrs_tlm_ratio_e eRatio = (rulrs_tlm_ratio_e)config.GetTlm();
   // TLM_RATIO_STD / TLM_RATIO_DISARMED
   if (eRatio == TLM_RATIO_STD || eRatio == TLM_RATIO_DISARMED)
   {
     // For Standard ratio, display the ratio instead of bps
     strcpy(tlmBandwidth, " (1:");
-    uint8_t ratioDiv = TLMratioEnumToValue(ExpressLRS_currAirRate_Modparams->TLMinterval);
+    uint8_t ratioDiv = TLMratioEnumToValue(RuLRS_currAirRate_Modparams->TLMinterval);
     itoa(ratioDiv, &tlmBandwidth[4], 10);
     strcat(tlmBandwidth, ")");
   }
@@ -343,10 +343,10 @@ static void luadevUpdateTlmBandwidth()
   {
     tlmBandwidth[0] = ' ';
 
-    uint16_t hz = 1000000 / ExpressLRS_currAirRate_Modparams->interval;
+    uint16_t hz = 1000000 / RuLRS_currAirRate_Modparams->interval;
     uint8_t ratiodiv = TLMratioEnumToValue(eRatio);
     uint8_t burst = TLMBurstMaxForRateRatio(hz, ratiodiv);
-    uint8_t bytesPerCall = OtaIsFullRes ? ELRS8_TELEMETRY_BYTES_PER_CALL : ELRS4_TELEMETRY_BYTES_PER_CALL;
+    uint8_t bytesPerCall = OtaIsFullRes ? RULRS8_TELEMETRY_BYTES_PER_CALL : RULRS4_TELEMETRY_BYTES_PER_CALL;
     uint32_t bandwidthValue = bytesPerCall * 8U * burst * hz / ratiodiv / (burst + 1);
     if (OtaIsFullRes)
     {
@@ -354,7 +354,7 @@ static void luadevUpdateTlmBandwidth()
       // N bytes more data for every rate except 100Hz 1:128, and 2*N bytes more for many
       // rates. The calculation is a more complex though, so just approximate some of the
       // extra bandwidth
-      bandwidthValue += 8U * (ELRS8_TELEMETRY_BYTES_PER_CALL - sizeof(OTA_LinkStats_s));
+      bandwidthValue += 8U * (RULRS8_TELEMETRY_BYTES_PER_CALL - sizeof(OTA_LinkStats_s));
     }
 
     itoa(bandwidthValue, &tlmBandwidth[2], 10);
@@ -583,14 +583,14 @@ static void recalculatePacketRateOptions(int minInterval)
     {
         uint8_t rate = i;
         rate = RATE_MAX - 1 - rate;
-        bool rateAllowed = (get_elrs_airRateConfig(rate)->interval * get_elrs_airRateConfig(rate)->numOfSends) >= minInterval;
+        bool rateAllowed = (get_rulrs_airRateConfig(rate)->interval * get_rulrs_airRateConfig(rate)->numOfSends) >= minInterval;
 
 #if defined(RADIO_LR1121)
         // Skip unsupported modes for hardware with only a single LR1121 or with a single RF path
         rateAllowed &= isSupportedRFRate(rate);
         if (rateAllowed)
         {
-            const auto radio_type = get_elrs_airRateConfig(rate)->radio_type;
+            const auto radio_type = get_rulrs_airRateConfig(rate)->radio_type;
             if (rfMode == RF_MODE_900)
             {
                 rateAllowed = radio_type == RADIO_TYPE_LR1121_GFSK_900 || radio_type == RADIO_TYPE_LR1121_LORA_900;
@@ -668,7 +668,7 @@ static void registerLuaParameters()
         {
           if (isSupportedRFRate(i))
           {
-            const auto radio_type = get_elrs_airRateConfig(i)->radio_type;
+            const auto radio_type = get_rulrs_airRateConfig(i)->radio_type;
             if (rfMode == RF_MODE_900 && (radio_type == RADIO_TYPE_LR1121_GFSK_900 || radio_type == RADIO_TYPE_LR1121_LORA_900))
             {
               config.SetRate(i);
@@ -696,7 +696,7 @@ static void registerLuaParameters()
         uint8_t selectedRate = RATE_MAX - 1 - arg;
         uint8_t actualRate = adjustPacketRateForBaud(selectedRate);
         uint8_t newSwitchMode = adjustSwitchModeForAirRate(
-          (OtaSwitchMode_e)config.GetSwitchMode(), get_elrs_airRateConfig(actualRate)->PayloadLength);
+          (OtaSwitchMode_e)config.GetSwitchMode(), get_rulrs_airRateConfig(actualRate)->PayloadLength);
         // If the switch mode is going to change, block the change while connected
         bool isDisconnected = connectionState == disconnected;
         // Don't allow the switch mode to change if the TX is in mavlink mode
@@ -719,7 +719,7 @@ static void registerLuaParameters()
       }
     });
     registerLUAParameter(&luaTlmRate, [](struct luaPropertiesCommon *item, uint8_t arg) {
-      expresslrs_tlm_ratio_e eRatio = (expresslrs_tlm_ratio_e)arg;
+      rulrs_tlm_ratio_e eRatio = (rulrs_tlm_ratio_e)arg;
       if (eRatio <= TLM_RATIO_DISARMED)
       {
         bool isMavlinkMode = config.GetLinkMode() == TX_MAVLINK_MODE;
@@ -743,7 +743,7 @@ static void registerLuaParameters()
         if (isDisconnected && !isMavlinkMode)
         {
           config.SetSwitchMode(arg);
-          OtaUpdateSerializers((OtaSwitchMode_e)arg, ExpressLRS_currAirRate_Modparams->PayloadLength);
+          OtaUpdateSerializers((OtaSwitchMode_e)arg, RuLRS_currAirRate_Modparams->PayloadLength);
         }
         else if (!isMavlinkMode) // No need to display warning as no switch change can be made while in Mavlink mode.
         {
@@ -781,7 +781,7 @@ static void registerLuaParameters()
           msp.reset();
           msp.makeCommand();
           msp.function = MSP_SET_RX_CONFIG;
-          msp.addByte(MSP_ELRS_MODEL_ID);
+          msp.addByte(MSP_RULRS_MODEL_ID);
           msp.addByte(newModelMatch ? CRSFHandset::getModelID() : 0xff);
           CRSF::AddMspMessage(&msp, CRSF_ADDRESS_CRSF_RECEIVER);
         }
@@ -906,7 +906,7 @@ static void registerLuaParameters()
     strlcat(version_domain, "... ", sizeof(version_domain));
   }
   strlcat(version_domain, FHSSconfig->domain, sizeof(version_domain));
-  registerLUAParameter(&luaELRSversion);
+  registerLUAParameter(&luaRuLRSversion);
   registerLUAParameter(NULL);
 }
 
@@ -921,7 +921,7 @@ static int event()
   uint8_t currentRate = adjustPacketRateForBaud(config.GetRate());
 #if defined(RADIO_LR1121)
   // calculate RFMode from current packet-rate
-  switch (get_elrs_airRateConfig(currentRate)->radio_type)
+  switch (get_rulrs_airRateConfig(currentRate)->radio_type)
   {
     case RADIO_TYPE_LR1121_LORA_900:
     case RADIO_TYPE_LR1121_GFSK_900:

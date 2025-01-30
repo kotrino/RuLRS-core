@@ -20,16 +20,16 @@ jobs:
           AWS_REGION: "auto"
         run: |
           if [[ -z $AWS_ACCESS_KEY_ID || -z $AWS_SECRET_ACCESS_KEY || -z $AWS_ENDPOINT_URL ]]; then
-            echo "Artifactory credentials are not defined. Most likely action is running from pull request. Not a bug."
+            echo "Учетные данные хранилища не определены. Вероятно, действие запущено из pull request. Это не ошибка."
             exit 0
           fi
 
-          echo "Generating artifact index"
-          aws s3 ls --endpoint-url $AWS_ENDPOINT_URL s3://expresslrs/ExpressLRS/ | grep PRE | awk '{print $2}' | sed s/\\/// > /tmp/artifacts
+          echo "Создание индекса артефактов"
+          aws s3 ls --endpoint-url $AWS_ENDPOINT_URL s3://rulrs/RuLRS/ | grep PRE | awk '{print $2}' | sed s/\\/// > /tmp/artifacts
 
           git branch --list --remotes --format '%(objectname)' > /tmp/hashes
           git tag --list --format '%(objectname)' >> /tmp/hashes
 
           for i in `grep -v -f /tmp/hashes /tmp/artifacts`; do
-            aws s3 rm --recursive --endpoint-url $AWS_ENDPOINT_URL s3://expresslrs/ExpressLRS/$i
+            aws s3 rm --recursive --endpoint-url $AWS_ENDPOINT_URL s3://rulrs/RuLRS/$i
           done

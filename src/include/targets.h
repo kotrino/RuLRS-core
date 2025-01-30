@@ -1,19 +1,21 @@
 #pragma once
-#if !defined TARGET_NATIVE
+#define TARGET_NATIVE  // Определяем что это нативная сборка
+
+#if !defined TARGET_NATIVE && !defined UNIT_TEST
 #include <Arduino.h>
 #endif
 
 #define UNDEF_PIN (-1)
 
-/// General Features ///
-#define LED_MAX_BRIGHTNESS 50 //0..255 for max led brightness
+/// Основные параметры ///
+#define LED_MAX_BRIGHTNESS 50 // 0..255 для максимальной яркости светодиода
 
 /////////////////////////
 
-#define WORD_ALIGNED_ATTR __attribute__((aligned(4)))
-#define WORD_PADDED(size) (((size)+3) & ~3)
+#define WORD_ALIGNED_ATTR __attribute__((aligned(4)))  // Атрибут выравнивания по 4 байта
+#define WORD_PADDED(size) (((size)+3) & ~3)  // Дополнение размера до кратного 4
 
-#undef ICACHE_RAM_ATTR //fix to allow both esp32 and esp8266 to use ICACHE_RAM_ATTR for mapping to IRAM
+#undef ICACHE_RAM_ATTR // исправление для разрешения использования ICACHE_RAM_ATTR как для esp32, так и для esp8266 для отображения в IRAM
 #define ICACHE_RAM_ATTR IRAM_ATTR
 
 #if defined(TARGET_NATIVE)
@@ -22,11 +24,11 @@
 #endif
 
 /*
- * Features
- * define features based on pins before defining pins as UNDEF_PIN
+ * Определения функций
+ * Важно: определения функций должны быть размещены до определения пинов как UNDEF_PIN
  */
 
-// Using these DEBUG_* imply that no SerialIO will be used so the output is readable
+// При использовании этих отладочных флагов SerialIO отключается для чистоты вывода
 #if !defined(DEBUG_CRSF_NO_OUTPUT) && defined(TARGET_RX) && (defined(DEBUG_RCVR_LINKSTATS) || defined(DEBUG_RX_SCOREBOARD) || defined(DEBUG_RCVR_SIGNAL_STATS))
 #define DEBUG_CRSF_NO_OUTPUT
 #endif
@@ -43,7 +45,7 @@ extern bool pwmSerialDefined;
 
 #if defined(RADIO_SX128X)
 #define Regulatory_Domain_ISM_2400 1
-// ISM 2400 band is in use => undefine other requlatory domain defines
+// При использовании диапазона ISM 2400 МГц отключаем все остальные регуляторные домены
 #undef Regulatory_Domain_AU_915
 #undef Regulatory_Domain_EU_868
 #undef Regulatory_Domain_IN_866
@@ -69,10 +71,10 @@ extern bool pwmSerialDefined;
 #include <soc/uart_pins.h>
 #endif
 #if !defined(U0RXD_GPIO_NUM)
-#define U0RXD_GPIO_NUM (3)
+#define U0RXD_GPIO_NUM (3)  // Номер пина RX для UART0
 #endif
 #if !defined(U0TXD_GPIO_NUM)
-#define U0TXD_GPIO_NUM (1)
+#define U0TXD_GPIO_NUM (1)  // Номер пина TX для UART0
 #endif
 
 #include "hardware.h"

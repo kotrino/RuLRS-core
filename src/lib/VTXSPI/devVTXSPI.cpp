@@ -93,7 +93,7 @@ static void rtc6705WriteRegister(uint32_t regData)
 
     // On some ESP32 MCUs there's a silicon bug which affects all 8n+1 bit and 1 bit transfers where the
     // last bit sent is corrupt.
-    // See: https://github.com/ExpressLRS/ExpressLRS/pull/2406#issuecomment-1722573356
+    // See: https://github.com/RuLRS/RuLRS/pull/2406#issuecomment-1722573356
     //
     // To reproduce, use an ESP32S3 and 25 bit transfers, change from channel A4 to A1, then A1 to A4 (ok),
     // then A4 to A3, then A3 to A4 (fail)

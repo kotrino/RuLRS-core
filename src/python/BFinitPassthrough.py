@@ -4,7 +4,7 @@ import serials_find
 import SerialHelper
 import bootloader
 from query_yes_no import query_yes_no
-from elrs_helpers import ElrsUploadResult
+from rulrs_helpers import ElrsUploadResult
 
 
 SCRIPT_DEBUG = False
@@ -58,14 +58,14 @@ def bf_passthrough_init(port, requestedBaudrate):
         raise PassthroughEnabled("No CLI available. Already in passthrough mode?, If this fails reboot FC and try again!")
 
     serial_check = []
-    if not _validate_serialrx(rl, "serialrx_provider", ["CRSF", "ELRS"]):
+    if not _validate_serialrx(rl, "serialrx_provider", ["CRSF", "RULRS"]):
         serial_check.append("Serial Receiver Protocol is not set to CRSF! Hint: set serialrx_provider = CRSF")
     if not _validate_serialrx(rl, "serialrx_inverted", "OFF"):
         serial_check.append("Serial Receiver UART is inverted! Hint: set serialrx_inverted = OFF")
     if not _validate_serialrx(rl, "serialrx_halfduplex", ["OFF", "AUTO"]):
         serial_check.append("Serial Receiver UART is not in full duplex! Hint: set serialrx_halfduplex = OFF")
-    if _validate_serialrx(rl, "rx_spi_protocol", "EXPRESSLRS" ) and serial_check:
-        serial_check = [ "ExpressLRS SPI RX detected\n\nUpdate via betaflight to flash your RX\nhttps://www.expresslrs.org/2.0/hardware/spi-receivers/" ]
+    if _validate_serialrx(rl, "rx_spi_protocol", "RULRS" ) and serial_check:
+        serial_check = [ "RuLRS SPI RX detected\n\nUpdate via betaflight to flash your RX\nhttps://www.rulrs.org/2.0/hardware/spi-receivers/" ]
 
     if serial_check:
         error = "\n\n [ERROR] Invalid serial RX configuration detected:\n"
@@ -120,7 +120,7 @@ def reset_to_bootloader(port, baud, target, action, accept=None, chip_type='ESP8
     rl.clear()
     BootloaderInitSeq = bootloader.get_init_seq(chip_type)
     dbg_print("  * Using full duplex (CRSF)")
-    #this is the training sequ for the ROM bootloader, we send it here so it doesn't auto-neg to the wrong baudrate by the BootloaderInitSeq that we send to reset ELRS
+    #this is the training sequ for the ROM bootloader, we send it here so it doesn't auto-neg to the wrong baudrate by the BootloaderInitSeq that we send to reset RULRS
     rl.write(b'\x07\x07\x12\x20' + 32 * b'\x55')
     time.sleep(0.2)
     rl.write(BootloaderInitSeq)

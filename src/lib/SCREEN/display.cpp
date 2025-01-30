@@ -4,7 +4,7 @@
 extern bool OtaIsFullRes;
 
 const char *Display::message_string[] = {
-    "ExpressLRS",
+    "RuLRS",
     "[  Connected  ]",
     "[  ! Armed !  ]",
     "[  Mismatch!  ]"

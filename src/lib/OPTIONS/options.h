@@ -47,10 +47,10 @@ typedef struct _options {
 } __attribute__((packed)) firmware_options_t;
 
 // Layout is PRODUCTNAME DEVICENAME OPTIONS HARDWARE
-constexpr size_t ELRSOPTS_PRODUCTNAME_SIZE = 128;
-constexpr size_t ELRSOPTS_DEVICENAME_SIZE = 16;
-constexpr size_t ELRSOPTS_OPTIONS_SIZE = 512;
-constexpr size_t ELRSOPTS_HARDWARE_SIZE = 2048;
+constexpr size_t RULRSOPTS_PRODUCTNAME_SIZE = 128;
+constexpr size_t RULRSOPTS_DEVICENAME_SIZE = 16;
+constexpr size_t RULRSOPTS_OPTIONS_SIZE = 512;
+constexpr size_t RULRSOPTS_HARDWARE_SIZE = 2048;
 
 extern firmware_options_t firmwareOptions;
 extern bool options_init();

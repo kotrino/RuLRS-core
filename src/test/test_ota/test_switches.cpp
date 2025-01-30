@@ -1,6 +1,6 @@
 /**
- * This file is part of ExpressLRS
- * See https://github.com/AlessandroAU/ExpressLRS
+ * This file is part of RuLRS
+ * See https://github.com/AlessandroAU/RuLRS
  *
  * Unit tests for over the air packet encoding, decoding and associated utilities
  *

@@ -43,7 +43,7 @@ function getPwmFormData() {
 }
 
 function enumSelectGenerate(id, val, arOptions) {
-  // Generate a <select> item with every option in arOptions, and select the val element (0-based)
+  // Генерирует элемент <select> с каждым вариантом из arOptions и выбирает элемент val (0-based)
   const retVal = `<div class="mui-select compact"><select id="${id}" class="pwmitm">` +
         arOptions.map((item, idx) => {
           if (item) return `<option value="${idx}"${(idx === val) ? ' selected' : ''} ${item === 'Disabled' ? 'disabled' : ''}>${item}</option>`;
@@ -77,7 +77,7 @@ function updatePwmSettings(arPwm) {
   var pinRxIndex = undefined;
   var pinTxIndex = undefined;
   var pinModes = []
-  // arPwm is an array of raw integers [49664,50688,51200]. 10 bits of failsafe position, 4 bits of input channel, 1 bit invert, 4 bits mode, 1 bit for narrow/750us
+  // arPwm - массив из необработанных целых чисел [49664,50688,51200]. 10 бит для позиции failsafe, 4 бита для входного канала, 1 бит для инвертирования, 4 бита для режима, 1 бит для узкого/750us
   const htmlFields = ['<div class="mui-panel pwmpnl"><table class="pwmtbl mui-table"><tr><th class="fixed-column">Output</th><th class="mui--text-center fixed-column">Features</th><th>Mode</th><th>Input</th><th class="mui--text-center fixed-column">Invert?</th><th class="mui--text-center fixed-column">750us?</th><th class="mui--text-center fixed-column pwmitm">Failsafe Mode</th><th class="mui--text-center fixed-column pwmitm">Failsafe Pos</th></tr>'];
   arPwm.forEach((item, index) => {
     const failsafe = (item.config & 1023) + 988; // 10 bits
@@ -138,7 +138,7 @@ function updatePwmSettings(arPwm) {
           'ch9 (AUX5)', 'ch10 (AUX6)', 'ch11 (AUX7)', 'ch12 (AUX8)',
           'ch13 (AUX9)', 'ch14 (AUX10)', 'ch15 (AUX11)', 'ch16 (AUX12)']);
     const failsafeModeSelect = enumSelectGenerate(`pwm_${index}_fsmode`, failsafeMode,
-        ['Set Position', 'No Pulses', 'Last Position']); // match eServoOutputFailsafeMode
+        ['Set Position', 'No Pulses', 'Last Position']); // соответствует eServoOutputFailsafeMode
     htmlFields.push(`<tr><td class="mui--text-center mui--text-title">${index + 1}</td>
             <td>${generateFeatureBadges(features)}</td>
             <td>${modeSelect}</td>
@@ -188,14 +188,14 @@ function updatePwmSettings(arPwm) {
       updateOthers(pinModes[index], false); // enable others
       pinModes[index] = pinMode.value;
 
-      // show Serial2 protocol selection only if Serial2 TX is assigned
+      // показывает выбор протокола Serial2 только если Serial2 TX назначен
       _('serial1-config').style.display = 'none';
       if (pinMode.value == 14) // Serial2 TX
         _('serial1-config').style.display = 'block';
     }
     pinMode.onchange();
 
-    // disable and hide the failsafe position field if not using the set-position failsafe mode
+    // отключает и скрывает поле позиции failsafe, если не используется режим failsafe set-position
     const failsafeMode = _(`pwm_${index}_fsmode`);
     failsafeMode.onchange = () => {
       const failsafeField = _(`pwm_${index}_fs`);
@@ -213,7 +213,7 @@ function updatePwmSettings(arPwm) {
 
   modeSelectionInit = false;
 
-  // put some constraints on pinRx/Tx mode selects
+  // накладывает некоторые ограничения на выбор режимов pinRx/Tx
   if (pinRxIndex !== undefined && pinTxIndex !== undefined) {
     const pinRxMode = _(`pwm_${pinRxIndex}_mode`);
     const pinTxMode = _(`pwm_${pinTxIndex}_mode`);
@@ -253,13 +253,13 @@ function updatePwmSettings(arPwm) {
 @@end
 
 function init() {
-  // setup network radio button handling
+  // настройка радиокнопки для сетевого радио
   _('nt0').onclick = () => _('credentials').style.display = 'block';
   _('nt1').onclick = () => _('credentials').style.display = 'block';
   _('nt2').onclick = () => _('credentials').style.display = 'none';
   _('nt3').onclick = () => _('credentials').style.display = 'none';
 @@if not isTX:
-  // setup model match checkbox handler
+  // настройка обработчика флажка сопоставления модели
   _('model-match').onclick = () => {
     if (_('model-match').checked) {
       _('modelNum').style.display = 'block';
@@ -273,10 +273,10 @@ function init() {
       _('modelid').value = '255';
     }
   };
-  // Start on the model tab
+  // Начать с вкладки модели
   mui.tabs.activate('pane-justified-3');
 @@else:
-  // Start on the options tab
+  // Начать с вкладки параметров
   mui.tabs.activate('pane-justified-1');
 @@end
   initFiledrag();
@@ -429,7 +429,7 @@ function updateConfig(data, options) {
   }
   _('vbind').onchange();
 
-  // set initial visibility status of Serial2 protocol selection
+  // устанавливает начальный видимый статус выбора протокола Serial2
   _('serial1-config').style.display = 'none';
   data.pwm?.forEach((item,index) => {
     const _pinMode = _(`pwm_${index}_mode`)
@@ -517,7 +517,7 @@ function fileDragHover(e) {
 
 function fileSelectHandler(e) {
   fileDragHover(e);
-  // ESP32 expects .bin, ESP8285 RX expect .bin.gz
+  // ESP32 ожидает .bin, ESP8285 RX ожидает .bin.gz
   const files = e.target.files || e.dataTransfer.files;
   const fileExt = files[0].name.split('.').pop();
 @@if (is8285 and not isTX):
@@ -577,7 +577,7 @@ function completeHandler(event) {
         message: data.msg
       });
     }
-    // This is basically a delayed display of the success dialog with a fake progress
+    // Это в основном задержка отображения диалога об успехе с фейковым прогрессом
     let percent = 0;
     const interval = setInterval(()=>{
 @@if (is8285):
@@ -780,15 +780,15 @@ function submitOptions(e) {
   const xhr = new XMLHttpRequest();
   xhr.open('POST', '/options.json');
   xhr.setRequestHeader('Content-Type', 'application/json');
-  // Convert the DOM element into a JSON object containing the form elements
+  // Преобразует DOM элемент в JSON объект, содержащий элементы формы
   const formElem = _('upload_options');
   const formObject = Object.fromEntries(new FormData(formElem));
-  // Add in all the unchecked checkboxes which will be absent from a FormData object
+  // Добавляет все неотмеченные флажки, которые будут отсутствовать в объекте FormData
   formElem.querySelectorAll('input[type=checkbox]:not(:checked)').forEach((k) => formObject[k.name] = false);
   // Force customised to true as this is now customising it
   formObject['customised'] = true;
 
-  // Serialize and send the formObject
+  // Сериализует и отправляет formObject
   xhr.send(JSON.stringify(formObject, function(k, v) {
     if (v === '') return undefined;
     if (_(k)) {
@@ -1140,8 +1140,8 @@ function isValidUidByte(s) {
 }
 
 function uidBytesFromText(text) {
-  // If text is 4-6 numbers separated with [commas]/[spaces] use as a literal UID
-  // This is a strict parser to not just extract numbers from text, but only accept if text is only UID bytes
+  // Если текст состоит из 4-6 чисел, разделенных запятыми или пробелами, используется как литеральный UID
+  // Это строгий парсер, который не просто извлекает числа из текста, а только принимает, если текст состоит из байтов UID
   if (/^[0-9, ]+$/.test(text))
   {
     let asArray = text.split(',').filter(isValidUidByte).map(Number);

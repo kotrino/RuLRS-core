@@ -13,18 +13,18 @@
 #define DYNPOWER_UPDATE_NOUPDATE -128
 #define DYNPOWER_UPDATE_MISSED   -127
 
-// Call DynamicPower_Init in setup()
+// Вызов DynamicPower_Init в setup()
 void DynamicPower_Init();
-// Call DynamicPower_Update from loop()
+// Вызов DynamicPower_Update из loop()
 void DynamicPower_Update(uint32_t now);
-// Call DynamicPower_TelemetryUpdate from ISR with DYNPOWER_UPDATE_MISSED or ScaledSNR value
+// Вызов DynamicPower_TelemetryUpdate из ISR с DYNPOWER_UPDATE_MISSED или ScaledSNR значением
 void DynamicPower_TelemetryUpdate(int8_t snrScaled);
 
 #endif // TARGET_TX
 
 #if defined(TARGET_RX)
 
-// Call DynamicPower_UpdateRx from loop()
+// Вызов DynamicPower_UpdateRx из loop()
 void DynamicPower_UpdateRx(bool initialize);
 
 #endif // TARGET_RX

@@ -1,18 +1,18 @@
 /***
- * This file defines the interface from device units to functions in either rx_main or tx_main
- * Use this instead of drectly declaring externs in your unit
+ * Этот файл определяет интерфейс от модулей устройства к функциям в rx_main или tx_main
+ * Используйте его вместо прямого объявления внешних переменных (externs) в вашем модуле
  ***/
 
 #include "common.h"
 
 /***
- * TX interface
+ * TX интерфейс
  ***/
 #if defined(TARGET_TX)
 #endif
 
 /***
- * RX interface
+ * RX интерфейс
  ***/
 #if defined(TARGET_RX)
 uint8_t getLq();
