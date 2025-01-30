@@ -3,7 +3,7 @@
 
 /****
  * Calculations used in this code taken from Adafruit BMP085 calculation
- * https://github.com/adafruit/Adafruit-BMP085-Library/blob/master/Adafruit_BMP085.cpp
+ * https://github.com/adafruit/Adafruit-BMP085-Library/blob/main/Adafruit_BMP085.cpp
  *
  * Code reused under GPL License, see the Adafruit project for full license information
  * https://github.com/adafruit/Adafruit-BMP085-Library/

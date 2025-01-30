@@ -35,7 +35,7 @@ class FileLoaderTestCase(unittest.TestCase):
             (
                 self.tmpldir + "/shared",
                 [".ignore", "snippet"],
-                ["master.html", ".ignore"],
+                ["main.html", ".ignore"],
             ),
             (
                 self.tmpldir + "/shared/snippet",
@@ -44,7 +44,7 @@ class FileLoaderTestCase(unittest.TestCase):
             ),
         ]
         assert (
-            "shared/master.html",
+            "shared/main.html",
             "shared/snippet/script.html",
             "tmpl1.html",
         ) == self.loader.list_names()
@@ -67,12 +67,12 @@ class DictLoaderTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.loader = DictLoader(
-            templates={"tmpl1.html": "x", "shared/master.html": "x"}
+            templates={"tmpl1.html": "x", "shared/main.html": "x"}
         )
 
     def test_list_names(self) -> None:
         """Tests list_names."""
-        assert ("shared/master.html", "tmpl1.html") == self.loader.list_names()
+        assert ("shared/main.html", "tmpl1.html") == self.loader.list_names()
 
     def test_load_existing(self) -> None:
         """Tests load."""
@@ -95,18 +95,18 @@ class ChainLoaderTestCase(unittest.TestCase):
                         "tmpl1.html": "x1",
                     }
                 ),
-                DictLoader(templates={"shared/master.html": "x2"}),
+                DictLoader(templates={"shared/main.html": "x2"}),
             ]
         )
 
     def test_list_names(self) -> None:
         """Tests list_names."""
-        assert ("shared/master.html", "tmpl1.html") == self.loader.list_names()
+        assert ("shared/main.html", "tmpl1.html") == self.loader.list_names()
 
     def test_load_existing(self) -> None:
         """Tests load."""
         assert "x1" == self.loader.load("tmpl1.html")
-        assert "x2" == self.loader.load("shared/master.html")
+        assert "x2" == self.loader.load("shared/main.html")
 
     def test_load_missing(self) -> None:
         """Tests load not found."""
@@ -117,7 +117,7 @@ class PreprocessLoaderTestCase(unittest.TestCase):
     """Test the ``PreprocessLoader``."""
 
     def setUp(self) -> None:
-        templates = {"tmpl1.html": "x1", "shared/master.html": "x2"}
+        templates = {"tmpl1.html": "x1", "shared/main.html": "x2"}
         engine = Engine(
             loader=DictLoader(templates=templates),
             extensions=[CoreExtension()],
@@ -126,7 +126,7 @@ class PreprocessLoaderTestCase(unittest.TestCase):
 
     def test_list_names(self) -> None:
         """Tests list_names."""
-        assert ("shared/master.html", "tmpl1.html") == self.loader.list_names()
+        assert ("shared/main.html", "tmpl1.html") == self.loader.list_names()
 
     def test_load_existing(self) -> None:
         """Tests load existing."""

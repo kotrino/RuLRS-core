@@ -23,8 +23,8 @@ class ConsoleTestCase(unittest.TestCase):
     def test_context_string(self) -> None:
         assert 0 == main(["demos/helloworld/hello.txt", '{"name": "World"}'])
 
-    def test_master(self) -> None:
-        assert 0 == main(["-s", "demos/master", "index.html"])
+    def test_main(self) -> None:
+        assert 0 == main(["-s", "demos/main", "index.html"])
 
     def test_line_join(self) -> None:
-        assert 0 == main(["-j", "\\", "-s", "demos/master", "index.html"])
+        assert 0 == main(["-j", "\\", "-s", "demos/main", "index.html"])

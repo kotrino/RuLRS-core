@@ -1,6 +1,6 @@
 
 # Which file do I need?
-* For transmitters on master, RuLRS 2.x, or 3.0 -> rulrsV3.lua
+* For transmitters on main, RuLRS 2.x, or 3.0 -> rulrsV3.lua
 * For transmitters on 1.x -> RULRS.lua
 
 ### Downloading from Github:

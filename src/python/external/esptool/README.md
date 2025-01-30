@@ -2,7 +2,7 @@
 
 A Python-based, open-source, platform-independent utility to communicate with the ROM bootloader in Espressif chips.
 
-[![Test esptool](https://github.com/espressif/esptool/actions/workflows/test_esptool.yml/badge.svg?branch=master)](https://github.com/espressif/esptool/actions/workflows/test_esptool.yml) [![Build esptool](https://github.com/espressif/esptool/actions/workflows/build_esptool.yml/badge.svg?branch=master)](https://github.com/espressif/esptool/actions/workflows/build_esptool.yml)
+[![Test esptool](https://github.com/espressif/esptool/actions/workflows/test_esptool.yml/badge.svg?branch=main)](https://github.com/espressif/esptool/actions/workflows/test_esptool.yml) [![Build esptool](https://github.com/espressif/esptool/actions/workflows/build_esptool.yml/badge.svg?branch=main)](https://github.com/espressif/esptool/actions/workflows/build_esptool.yml)
 
 ## Documentation
 
@@ -18,4 +18,4 @@ esptool.py was initially created by Fredrik Ahlberg (@[themadinventor](https://g
 
 ## License
 
-This document and the attached source code are released as Free Software under GNU General Public License Version 2 or later. See the accompanying [LICENSE file](https://github.com/espressif/esptool/blob/master/LICENSE) for a copy.
+This document and the attached source code are released as Free Software under GNU General Public License Version 2 or later. See the accompanying [LICENSE file](https://github.com/espressif/esptool/blob/main/LICENSE) for a copy.

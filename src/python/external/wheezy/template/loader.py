@@ -137,7 +137,7 @@ class PreprocessLoader(Loader):
 def autoreload(engine: Engine, enabled: bool = True) -> Engine:
     """Auto reload template if changes are detected in file.
 
-    Limitation: master (inherited), imported and preprocessed templates.
+    Limitation: main (inherited), imported and preprocessed templates.
 
     It is recommended to use application server that supports
     file reload instead.
@@ -157,7 +157,7 @@ class AutoReloadProxy(Engine):
         self.engine = engine
         self.names: typing.Dict[str, int] = {}
         warn(
-            "autoreload limitation: master (inherited), imported "
+            "autoreload limitation: main (inherited), imported "
             "and preprocessed templates. It is recommended to use "
             "application server that supports file reload instead.",
             stacklevel=3,

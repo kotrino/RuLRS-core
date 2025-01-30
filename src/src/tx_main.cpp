@@ -1081,7 +1081,7 @@ static void EnterBindingMode()
   hwTimer::stop();
   while (busyTransmitting);
 
-  // Queue up sending the Master UID as MSP packets
+  // Queue up sending the main UID as MSP packets
   SendUIDOverMSP();
 
   // Binding uses 50Hz, and InvertIQ

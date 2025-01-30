@@ -28,7 +28,7 @@ constexpr auto F_CPU_RMT = APB_CLK_FREQ;
 constexpr auto RMT_CYCLES_PER_SEC = (F_CPU_RMT / DSHOT_CLK_DIVIDER);
 constexpr auto RMT_CYCLES_PER_ESP_CYCLE = (F_CPU / RMT_CYCLES_PER_SEC);
 
-// Source:	https://github.com/bitdump/BLHeli/blob/master/BLHeli_S%20SiLabs/Dshotprog%20spec%20BLHeli_S.txt
+// Source:	https://github.com/bitdump/BLHeli/blob/main/BLHeli_S%20SiLabs/Dshotprog%20spec%20BLHeli_S.txt
 // Date:	04.07.2021
 
 enum dshot_cmd_t {

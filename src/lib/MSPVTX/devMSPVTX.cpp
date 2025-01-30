@@ -11,7 +11,7 @@
 
 /**
  * Created by phobos-
- * Based on OpenVTX implementation - https://github.com/OpenVTx/OpenVTx/blob/master/src/src/mspVtx.c
+ * Based on OpenVTX implementation - https://github.com/OpenVTx/OpenVTx/blob/main/src/src/mspVtx.c
  * Original author: Jye Smith.
 **/
 

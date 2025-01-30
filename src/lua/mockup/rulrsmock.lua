@@ -16,7 +16,7 @@ return {
   {name='Bind', id=14, type=13},
   {name='Wifi Update', id=15, type=13},
   {name='BLE Joystick', id=16, type=13},
-  {name='master', id=17, type=16, value='f00fcb'},
+  {name='main', id=17, type=16, value='f00fcb'},
   {name='Float Tst', id=18, type=8, value=-15, step=5, prec=1000, min=-50, max=50, unit='flt', fmt='%.3fflt'},
 
   {name="----BACK----", type=14, parent=255},

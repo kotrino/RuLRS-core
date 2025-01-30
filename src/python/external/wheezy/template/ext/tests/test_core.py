@@ -159,8 +159,8 @@ class ParserTestCase(unittest.TestCase):
 
     def test_extends(self) -> None:
         """Test parse_extends."""
-        nodes = self.parse('@extends("shared/master.html")\n')
-        assert [(1, "extends", ('"shared/master.html"', []))] == nodes
+        nodes = self.parse('@extends("shared/main.html")\n')
+        assert [(1, "extends", ('"shared/main.html"', []))] == nodes
 
     def test_include(self) -> None:
         """Test parse_include."""
@@ -719,13 +719,13 @@ class MultiTemplateTestCase(unittest.TestCase):
     def test_extends(self) -> None:
         self.templates.update(
             {
-                "master.html": """\
+                "main.html": """\
 @def say_hi(name):
     Hello, @name!
 @end
 @say_hi('John')""",
                 "tmpl.html": """\
-@extends('master.html')
+@extends('main.html')
 @def say_hi(name):
     Hi, @name!
 @end
@@ -733,19 +733,19 @@ class MultiTemplateTestCase(unittest.TestCase):
             }
         )
         assert "    Hi, John!\n" == self.render("tmpl.html", {})
-        assert "    Hello, John!\n" == self.render("master.html", {})
+        assert "    Hello, John!\n" == self.render("main.html", {})
 
     def test_extends_dynamic(self) -> None:
         self.templates.update(
             {
-                "master.html": """\
+                "main.html": """\
 @def say_hi(name):
     Hello, @name!
 @end
 @say_hi('John')""",
                 "tmpl.html": """
-@require(master)
-@extends(master)
+@require(main)
+@extends(main)
 @def say_hi(name):
     Hi, @name!
 @end
@@ -753,20 +753,20 @@ class MultiTemplateTestCase(unittest.TestCase):
             }
         )
         assert "    Hi, John!\n" == self.render(
-            "tmpl.html", {"master": "master.html"}
+            "tmpl.html", {"main": "main.html"}
         )
-        assert "    Hello, John!\n" == self.render("master.html", {})
+        assert "    Hello, John!\n" == self.render("main.html", {})
 
     def test_super(self) -> None:
         self.templates.update(
             {
-                "master.html": """\
+                "main.html": """\
 @def say_hi(name):
     Hello, @name!\
 @end
 @say_hi('John')""",
                 "tmpl.html": """\
-@extends('master.html')
+@extends('main.html')
 @def say_hi(name):
     @super_defs['say_hi'](name)!!\
 @end

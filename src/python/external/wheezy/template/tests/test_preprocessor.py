@@ -51,7 +51,7 @@ class PreprocessorTestCase(unittest.TestCase):
     def test_extends(self) -> None:
         self.templates.update(
             {
-                "master.html": """\
+                "main.html": """\
 #require(_)
 @def say_hi(name):
     #_('Hello,') @name!
@@ -59,7 +59,7 @@ class PreprocessorTestCase(unittest.TestCase):
 @say_hi('John')""",
                 "tmpl.html": """\
 #require(_)
-@extends('master.html')
+@extends('main.html')
 @def say_hi(name):
     #_('Hi,') @name!
 @end

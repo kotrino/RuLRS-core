@@ -1,7 +1,7 @@
 inputimeout
 ===========
 
-.. image:: https://travis-ci.org/johejo/inputimeout.svg?branch=master
+.. image:: https://travis-ci.org/johejo/inputimeout.svg?branch=main
     :target: https://travis-ci.org/johejo/inputimeout
 
 .. image:: https://ci.appveyor.com/api/projects/status/2g1fbnrcoj64g8t9?svg=true
@@ -11,7 +11,7 @@ inputimeout
     :target: https://pypi.python.org/pypi/inputimeout
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
-    :target: https://raw.githubusercontent.com/johejo/inputimeout/master/LICENSE
+    :target: https://raw.githubusercontent.com/johejo/inputimeout/main/LICENSE
 
 .. image:: https://api.codeclimate.com/v1/badges/3d51d0efbd7b86f0b7f1/maintainability
    :target: https://codeclimate.com/github/johejo/inputimeout/maintainability
@@ -21,7 +21,7 @@ inputimeout
    :target: https://codeclimate.com/github/johejo/inputimeout/test_coverage
    :alt: Test Coverage
 
-.. image:: https://codecov.io/gh/johejo/inputimeout/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/johejo/inputimeout/branch/main/graph/badge.svg
   :target: https://codecov.io/gh/johejo/inputimeout
 
 Description
