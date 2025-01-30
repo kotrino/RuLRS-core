@@ -3,13 +3,13 @@
 
 ---
 
-! [Banner] (https://github.com/kotrino/RuLRS-core/blob/main/img/banner.png?raw=true)
+![Banner](https://github.com/kotrino/RuLRS-core/blob/main/img/banner.png?raw=true)
 
 <Центр>
 
-[! [Выпуск] (https://img.shields.io/github/v/release/kotrino/RuLRS?style=flat-square)] (https://github.com/kotrino/RuLRS/releases)
-[! [Статус сборки] (https://img.shields.io/github/actions/workflow/status/kotrino/RuLRS/build.yml?logo=github&style=flat-square)] (https://github.com/kotrino/RuLRS/actions)
-[! [Лицензия] (https://img.shields.io/github/license/kotrino/RuLRS?style=flat-square)] (https://github.com/kotrino/RuLRS/blob/main/license)
+[![Выпуск](https://img.shields.io/github/v/release/kotrino/RuLRS?style=flat-square)](https://github.com/kotrino/RuLRS/releases)
+[![Статус сборки](https://img.shields.io/github/actions/workflow/status/kotrino/RuLRS/build.yml?logo=github&style=flat-square)](https://github.com/kotrino/RuLRS/actions)
+[![Лицензия](https://img.shields.io/github/license/kotrino/RuLRS?style=flat-square)](https://github.com/kotrino/RuLRS/blob/main/license)
 [!
 [!
 
