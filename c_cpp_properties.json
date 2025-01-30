@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/src/include",
+                "${workspaceFolder}/src/lib",
+                "${workspaceFolder}/src/lib/MAVLink",
+                "${env:LOCALAPPDATA}/Arduino15/packages/esp32/hardware/esp32/2.0.14/cores/esp32",
+                "${env:LOCALAPPDATA}/Arduino15/packages/esp32/hardware/esp32/2.0.14/tools/sdk/include"
+            ],
+            "defines": [
+                "TARGET_NATIVE",
+                "RADIO_SX128X",
+                "PLATFORM_NATIVE"
+            ],
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x86"
+        }
+    ],
+    "version": 4
+} 
