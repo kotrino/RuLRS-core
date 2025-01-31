@@ -8,9 +8,9 @@ class LPF
 public:
     int32_t SmoothDataINT;
     int32_t SmoothDataFP;
-    int32_t Beta = 3;     // Length = 16
-    int32_t FP_Shift = 5; //Number of fractional bits
-    bool NeedReset = true;  // wait for the first data to upcoming.
+    int32_t Beta = 3;     // Длина = 16
+    int32_t FP_Shift = 5; // Количество дробных битов
+    bool NeedReset = true;  // ждем первых данных.
 
     LPF(int Beta_, int FP_Shift_)
     {
@@ -39,12 +39,12 @@ public:
 
         int RawData;
         RawData = Indata;
-        RawData <<= FP_Shift; // Shift to fixed point
+        RawData <<= FP_Shift; // Перемещение в фиксированную точку
         SmoothDataFP = (SmoothDataFP << Beta) - SmoothDataFP;
         SmoothDataFP += RawData;
         SmoothDataFP >>= Beta;
-        // Don't do the following shift if you want to do further
-        // calculations in fixed-point using SmoothData
+        // Не выполняйте следующий сдвиг, если вы хотите делать дальнейшие
+        // расчеты в фиксированной точке, используя SmoothData
         SmoothDataINT = SmoothDataFP >> FP_Shift;
         return SmoothDataINT;
     }

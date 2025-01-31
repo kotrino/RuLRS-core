@@ -95,7 +95,7 @@ typedef enum {
     HARDWARE_screen_sck,      // clock for SPI & I2C
     HARDWARE_screen_sda,      // I2C data
 
-    // screen_type == 0 is no screen
+    // screen_type == 0 - нет экрана
     HARDWARE_screen_type,
     HARDWARE_screen_reversed,
     HARDWARE_screen_bl,
