@@ -12,10 +12,15 @@ jobs:
     steps:
       - uses: actions/stale@v9
         with:
-          days-before-issue-stale: -1
-          days-before-issue-close: 12
-          stale-issue-label: "closing :door:"
+          # Настройки для issues
+          days-before-issue-stale: -1        # Дней до пометки как устаревшее
+          days-before-issue-close: 12         # Дней до закрытия
+          stale-issue-label: "closing :door:"        # Метка для устаревших
+          stale-issue-message: "This issue has been automatically marked as stale because it has not had recent activity."
           close-issue-message: "This issue was closed because it has been inactive for 12 days since being marked as closing."
-          days-before-pr-stale: -1
-          days-before-pr-close: -1
+          
+          # Настройки для PR
+          days-before-pr-stale: -1           # Отключить для PR
+          days-before-pr-close: -1           # Отключить для PR
+          
           repo-token: ${{ secrets.GITHUB_TOKEN }}
