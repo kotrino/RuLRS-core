@@ -4,7 +4,7 @@ import serials_find
 import SerialHelper
 import bootloader
 from query_yes_no import query_yes_no
-from rulrs_helpers import ElrsUploadResult
+from rulrs_helpers import RulrsUploadResult
 
 
 SCRIPT_DEBUG = False
@@ -138,16 +138,18 @@ def reset_to_bootloader(port, baud, target, action, accept=None, chip_type='ESP8
                 dbg_print("Ok, flashing anyway!")
             else:
                 dbg_print("Wrong target selected your RX is '%s', trying to flash '%s'" % (rx_target, flash_target))
-                return ElrsUploadResult.ErrorMismatch
+                return RulrsUploadResult.ErrorMismatch
         elif flash_target != "":
             dbg_print("Verified RX target '%s'" % (flash_target))
     time.sleep(.5)
+
     s.close()
 
-    return ElrsUploadResult.Success
+    return RulrsUploadResult.Success
 
 def init_passthrough(source, target, env) -> int:
     env.AutodetectUploadPort([env])
+
     try:
         bf_passthrough_init(env['UPLOAD_PORT'], env['UPLOAD_SPEED'])
     except PassthroughEnabled as err:
@@ -177,10 +179,11 @@ def main(custom_args = None):
     if (args.port == None):
         args.port = serials_find.get_serial_port()
 
-    returncode = ElrsUploadResult.Success
+    returncode = RulrsUploadResult.Success
     try:
         bf_passthrough_init(args.port, args.baud)
     except PassthroughEnabled as err:
+
         dbg_print(str(err))
 
     if args.reset_to_bl:

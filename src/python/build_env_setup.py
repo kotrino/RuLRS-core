@@ -111,4 +111,4 @@ if platform in ['espressif32']:
 
 if platform in ['espressif32', 'espressif8266']:
     if not os.path.exists('hardware'):
-        rulrs_helpers.git_cmd('clone', 'https://github.com/RuLRS/targets', 'hardware')
+        rulrs_helpers.git_cmd('clone', 'https://github.com/kotrino/RuLRS-targets', 'hardware')

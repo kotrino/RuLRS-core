@@ -8,10 +8,10 @@ def git_cmd(*args):
 
 def get_git_version():
     """
-    Return a dict with keys
-    version: The version tag if HEAD is a version, or branch otherwise
-    sha: the 6 character short sha for the current HEAD revison, falling back to
-        VERSION file if not in a git repo
+    Возвращает словарь с ключами:
+    version: Тег версии, если HEAD указывает на версию, иначе возвращает ветку
+    sha: 6-символьный короткий SHA текущей HEAD ревизии; если не git репозиторий,
+        то берётся из файла VERSION
     """
     ver = "ver.unknown"
     sha = "000000"
@@ -36,10 +36,10 @@ def get_git_version():
     return dict(version=ver, sha=sha[:6])
 
 
-class ElrsUploadResult:
-        # SUCCESS
-        Success = 0
-        # ERROR: Unspecified
-        ErrorGeneral = -1
-        # ERROR: target mismatch
-        ErrorMismatch = -2
+class RulrsUploadResult:
+    # SUCCESS
+    Success = 0
+    # ERROR: Unspecified
+    ErrorGeneral = -1
+    # ERROR: target mismatch
+    ErrorMismatch = -2

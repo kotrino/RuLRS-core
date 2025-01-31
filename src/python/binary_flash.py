@@ -4,7 +4,7 @@ from enum import Enum
 import shutil
 import os
 
-from rulrs_helpers import ElrsUploadResult
+from rulrs_helpers import RulrsUploadResult
 import BFinitPassthrough
 import ETXinitPassthrough
 import serials_find
@@ -52,8 +52,9 @@ def upload_esp8266_uart(args):
         cmd.extend(['0x0000', args.file.name])
         esptool.main(cmd)
     except:
-        return ElrsUploadResult.ErrorGeneral
-    return ElrsUploadResult.Success
+        return RulrsUploadResult.ErrorGeneral
+    return RulrsUploadResult.Success
+
 
 def upload_esp8266_bf(args, options):
     if args.port == None:
@@ -62,16 +63,18 @@ def upload_esp8266_bf(args, options):
     if args.force == True:
         mode = 'uploadforce'
     retval = BFinitPassthrough.main(['-p', args.port, '-b', str(args.baud), '-r', options.firmware, '-a', mode, '--accept', args.accept])
-    if retval != ElrsUploadResult.Success:
+    if retval != RulrsUploadResult.Success:
         return retval
     try:
+
         cmd = ['--passthrough', '--chip', 'esp8266', '--port', args.port, '--baud', str(args.baud), '--before', 'no_reset', '--after', 'soft_reset', 'write_flash']
         if args.erase: cmd.append('--erase-all')
         cmd.extend(['0x0000', args.file.name])
         esptool.main(cmd)
     except:
-        return ElrsUploadResult.ErrorGeneral
-    return ElrsUploadResult.Success
+        return RulrsUploadResult.ErrorGeneral
+    return RulrsUploadResult.Success
+
 
 def upload_esp32_uart(args):
     if args.port == None:
@@ -84,8 +87,9 @@ def upload_esp32_uart(args):
         cmd.extend(['-z', '--flash_mode', 'dio', '--flash_freq', '40m', '--flash_size', 'detect', start_addr, os.path.join(dir, 'bootloader.bin'), '0x8000', os.path.join(dir, 'partitions.bin'), '0xe000', os.path.join(dir, 'boot_app0.bin'), '0x10000', args.file.name])
         esptool.main(cmd)
     except:
-        return ElrsUploadResult.ErrorGeneral
-    return ElrsUploadResult.Success
+        return RulrsUploadResult.ErrorGeneral
+    return RulrsUploadResult.Success
+
 
 def upload_esp32_etx(args):
     if args.port == None:
@@ -99,8 +103,9 @@ def upload_esp32_etx(args):
         cmd.extend(['-z', '--flash_mode', 'dio', '--flash_freq', '40m', '--flash_size', 'detect', start_addr, os.path.join(dir, 'bootloader.bin'), '0x8000', os.path.join(dir, 'partitions.bin'), '0xe000', os.path.join(dir, 'boot_app0.bin'), '0x10000', args.file.name])
         esptool.main(cmd)
     except:
-        return ElrsUploadResult.ErrorGeneral
-    return ElrsUploadResult.Success
+        return RulrsUploadResult.ErrorGeneral
+    return RulrsUploadResult.Success
+
 
 def upload_esp32_bf(args, options):
     if args.port == None:
@@ -109,13 +114,15 @@ def upload_esp32_bf(args, options):
     if args.force == True:
         mode = 'uploadforce'
     retval = BFinitPassthrough.main(['-p', args.port, '-b', str(args.baud), '-r', options.firmware, '-a', mode])
-    if retval != ElrsUploadResult.Success:
+    if retval != RulrsUploadResult.Success:
         return retval
     try:
+
         esptool.main(['--passthrough', '--chip', args.platform.replace('-', ''), '--port', args.port, '--baud', str(args.baud), '--before', 'no_reset', '--after', 'hard_reset', 'write_flash', '-z', '--flash_mode', 'dio', '--flash_freq', '40m', '--flash_size', 'detect', '0x10000', args.file.name])
     except:
-        return ElrsUploadResult.ErrorGeneral
-    return ElrsUploadResult.Success
+        return RulrsUploadResult.ErrorGeneral
+    return RulrsUploadResult.Success
+
 
 def upload_dir(mcuType, args):
     if mcuType == MCUType.ESP8266:
@@ -160,4 +167,4 @@ def upload(options: FirmwareOptions, args):
             elif args.flash == UploadMethod.wifi:
                 return upload_wifi(args, options, ['rulrs_tx', 'rulrs_tx.local'])
     print("Invalid upload method for firmware")
-    return ElrsUploadResult.ErrorGeneral
+    return RulrsUploadResult.ErrorGeneral
