@@ -7,6 +7,14 @@ SX127xDriver *SX127xDriver::instance = NULL;
 
 RFAMP_hal RFAMP;
 
+#ifdef USE_SX1276_RFO_HF
+  #ifndef OPT_USE_SX1276_RFO_HF
+    #define OPT_USE_SX1276_RFO_HF true
+  #endif
+#else
+  #define OPT_USE_SX1276_RFO_HF false
+#endif
+
 const uint8_t SX127x_AllowedSyncwords[105] =
     {0, 5, 6, 7, 11, 12, 13, 15, 18,
      21, 23, 26, 29, 30, 31, 33, 34,
@@ -80,7 +88,9 @@ bool SX127xDriver::Begin(uint32_t minimumFrequency, uint32_t maximumFrequency)
   ConfigLoraDefaults();
   // Force the next power update, and use the defaults for RFO_HF or PA_BOOST
   pwrCurrent = PWRPENDING_NONE;
+#if defined(TARGET_UNIFIED_RX) || defined(TARGET_UNIFIED_TX)
   if (POWER_OUTPUT_VALUES2 == nullptr)
+#endif
   {
     if (OPT_USE_SX1276_RFO_HF)
     {
@@ -204,7 +214,7 @@ void SX127xDriver::SetBandwidthCodingRate(SX127x_Bandwidth bw, SX127x_CodingRate
         hal.writeRegister(0x36, 0x03, SX12XX_Radio_All);
 
         // Errata 2.3 Receiver Spurious Reception of a LoRa Signal - https://www.semtech.com/products/wireless-rf/lora-connect/sx1276
-        // !!! Note - Registers 0x2F and 0x30 also need to be corrected if RULRS every uses other BW.  Check errata. !!!
+        // !!! Note - Registers 0x2F and 0x30 also need to be corrected if ELRS every uses other BW.  Check errata. !!!
         hal.writeRegisterBits(SX127X_REG_DETECT_OPTIMIZE, 0x00, 0x80, SX12XX_Radio_All);
       }
     #endif
@@ -429,7 +439,7 @@ void ICACHE_RAM_ATTR SX127xDriver::TXnbISR()
   TXdoneCallback();
 }
 
-void ICACHE_RAM_ATTR SX127xDriver::TXnb(uint8_t * data, uint8_t size, bool sendGeminiBuffer, uint8_t * dataGemini, SX12XX_Radio_Number_t radioNumber)
+void ICACHE_RAM_ATTR SX127xDriver::TXnb(uint8_t * data, uint8_t size, SX12XX_Radio_Number_t radioNumber)
 {
   // if (currOpmode == SX127x_OPMODE_TX)
   // {
@@ -459,15 +469,7 @@ void ICACHE_RAM_ATTR SX127xDriver::TXnb(uint8_t * data, uint8_t size, bool sendG
 
   RFAMP.TXenable(radioNumber);
   hal.writeRegister(SX127X_REG_FIFO_ADDR_PTR, SX127X_FIFO_TX_BASE_ADDR_MAX, radioNumber);
-  if (sendGeminiBuffer)
-  {
-    hal.writeRegister(SX127X_REG_FIFO, data, size, SX12XX_Radio_1);
-    hal.writeRegister(SX127X_REG_FIFO, dataGemini, size, SX12XX_Radio_2);
-  }
-  else
-  {
-    hal.writeRegister(SX127X_REG_FIFO, data, size, radioNumber);
-  }
+  hal.writeRegister(SX127X_REG_FIFO, data, size, radioNumber);
 
   SetMode(SX127x_OPMODE_TX, radioNumber);
 }
@@ -504,48 +506,50 @@ void ICACHE_RAM_ATTR SX127xDriver::RXnb()
   }
 }
 
-void ICACHE_RAM_ATTR SX127xDriver::CheckForSecondPacket()
+
+void ICACHE_RAM_ATTR SX127xDriver::GetLastPacketStats()
 {
   SX12XX_Radio_Number_t radio[2] = {SX12XX_Radio_1, SX12XX_Radio_2};
+  bool gotRadio[2] = {false, false}; // one-radio default.
   uint8_t processingRadioIdx = (instance->processingPacketRadio == SX12XX_Radio_1) ? 0 : 1;
   uint8_t secondRadioIdx = !processingRadioIdx;
 
   // processingRadio always passed the sanity check here
   gotRadio[processingRadioIdx] = true;
-  gotRadio[secondRadioIdx] = false;
 
-  hasSecondRadioGotData = false;
-
-  if (GPIO_PIN_NSS_2 != UNDEF_PIN)
+  // if it's a dual radio, and if it's the first IRQ
+  // (don't need this if it's the second IRQ, because we know the first IRQ is already failed)
+  if (instance->isFirstRxIrq && GPIO_PIN_NSS_2 != UNDEF_PIN)
   {
+    bool isSecondRadioGotData = false;
     uint16_t secondIrqStatus = instance->GetIrqFlags(radio[secondRadioIdx]);
+
     if(secondIrqStatus & SX127X_CLEAR_IRQ_FLAG_RX_DONE)
     {
+      WORD_ALIGNED_ATTR uint8_t RXdataBuffer_second[RXBuffSize];
       uint8_t const FIFOaddr = hal.readRegister(SX127X_REG_FIFO_RX_CURRENT_ADDR, radio[secondRadioIdx]);
       hal.writeRegister(SX127X_REG_FIFO_ADDR_PTR, FIFOaddr, radio[secondRadioIdx]);
-      hal.readRegister(SX127X_REG_FIFO, RXdataBufferSecond, PayloadLength, radio[secondRadioIdx]);
+      hal.readRegister(SX127X_REG_FIFO, RXdataBuffer_second, PayloadLength, radio[secondRadioIdx]);
 
-      hasSecondRadioGotData = true;
+      // if the second packet is same to the first, it's valid
+      if (memcmp(RXdataBuffer, RXdataBuffer_second, PayloadLength) == 0)
+      {
+        isSecondRadioGotData = true;
+      }
     }
-  }
-}
 
-void ICACHE_RAM_ATTR SX127xDriver::GetLastPacketStats()
-{
-  SX12XX_Radio_Number_t radio[2] = {SX12XX_Radio_1, SX12XX_Radio_2};
-  uint8_t processingRadioIdx = (instance->processingPacketRadio == SX12XX_Radio_1) ? 0 : 1;
-  uint8_t secondRadioIdx = !processingRadioIdx;
+    gotRadio[secondRadioIdx] = isSecondRadioGotData;
+    #if defined(DEBUG_RCVR_SIGNAL_STATS)
+    // second radio received the same packet to the processing radio
+    if(!isSecondRadioGotData)
+    {
+      instance->rxSignalStats[secondRadioIdx].fail_count++;
+    }
+    #endif
+  }
 
   int8_t rssi[2];
   int8_t snr[2];
-
-  gotRadio[secondRadioIdx] = hasSecondRadioGotData;
-  #if defined(DEBUG_RCVR_SIGNAL_STATS)
-  if(!hasSecondRadioGotData)
-  {
-    instance->rxSignalStats[secondRadioIdx].fail_count++;
-  }
-  #endif
 
   for (uint8_t i = 0; i < 2; i++)
   {
@@ -668,15 +672,15 @@ uint32_t ICACHE_RAM_ATTR SX127xDriver::GetCurrBandwidthNormalisedShifted() // th
  * @param offset is in Hz or FREQ_STEP (FREQ_HZ_TO_REG_VAL) units, whichever
  *    was used to SetFrequencyHz/SetFrequencyReg
  */
-void ICACHE_RAM_ATTR SX127xDriver::SetPPMoffsetReg(int32_t offset, SX12XX_Radio_Number_t radioNumber)
+void ICACHE_RAM_ATTR SX127xDriver::SetPPMoffsetReg(int32_t offset)
 {
-  int8_t offsetPPM = (offset * 1000000 / currFreq) * 95 / 100;
-  hal.writeRegister(SX127x_PPMOFFSET, (uint8_t)offsetPPM, radioNumber);
+  int8_t offsetPPM = (offset * 1e6 / currFreq) * 95 / 100;
+  hal.writeRegister(SX127x_PPMOFFSET, (uint8_t)offsetPPM, processingPacketRadio);
 }
 
-bool ICACHE_RAM_ATTR SX127xDriver::GetFrequencyErrorbool(SX12XX_Radio_Number_t radioNumber)
+bool ICACHE_RAM_ATTR SX127xDriver::GetFrequencyErrorbool()
 {
-  return (hal.readRegister(SX127X_REG_FEI_MSB, radioNumber) & 0b1000) >> 3; // returns true if pos freq error, neg if false
+  return (hal.readRegister(SX127X_REG_FEI_MSB, processingPacketRadio) & 0b1000) >> 3; // returns true if pos freq error, neg if false
 }
 
 int32_t ICACHE_RAM_ATTR SX127xDriver::GetFrequencyError()
@@ -764,6 +768,7 @@ void ICACHE_RAM_ATTR SX127xDriver::IsrCallback(SX12XX_Radio_Number_t radioNumber
             instance->rxSignalStats[(radioNumber == SX12XX_Radio_1) ? 0 : 1].fail_count++;
         }
 #endif
+        instance->isFirstRxIrq = false;   // RX isr is already fired in this period. (reset to true in tock)
     }
     else if (irqStatus == SX127X_CLEAR_IRQ_FLAG_NONE)
     {

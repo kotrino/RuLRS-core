@@ -98,7 +98,7 @@ bool Telemetry::GetNextPayload(uint8_t* nextPayloadSize, uint8_t **payloadData)
         checks++;
     } while(!payloadTypes[currentPayloadIndex].updated && checks < payloadTypesCount);
 
-    if (payloadTypes[currentPayloadIndex].updated)
+    if (payloadTypes[currentPayloadIndex].updated) // && payloadTypes[currentPayloadIndex].data != nullptr
     {
         payloadTypes[currentPayloadIndex].locked = true;
 
@@ -145,7 +145,6 @@ void Telemetry::ResetState()
     receivedPackages = 0;
 
     uint8_t offset = 0;
-
     for (int8_t i = 0; i < payloadTypesCount; i++)
     {
         payloadTypes[i].locked = false;

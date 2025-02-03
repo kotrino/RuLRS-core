@@ -11,23 +11,17 @@
 
 #include "devHandset.h"
 #include "devLED.h"
+#include "devScreen.h"
+#include "devBuzzer.h"
+#include "devBLE.h"
 #include "devLUA.h"
 #include "devWIFI.h"
 #include "devButton.h"
 #include "devVTX.h"
-#if defined(PLATFORM_ESP32)
-#include "devScreen.h"
-#include "devBLE.h"
 #include "devGsensor.h"
 #include "devThermal.h"
 #include "devPDET.h"
 #include "devBackpack.h"
-#else
-// Fake functions for 8285
-void checkBackpackUpdate() {}
-void sendCRSFTelemetryToBackpack(uint8_t *) {}
-void sendMAVLinkTelemetryToBackpack(uint8_t *) {}
-#endif
 
 #include "MAVLink.h"
 

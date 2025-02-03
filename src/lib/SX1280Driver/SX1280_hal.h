@@ -15,7 +15,7 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
 
 Maintainer: Miguel Luis and Gregory Cristian
 
-Heavily modified/simplified by Alessandro Carcione 2020 for RULRS project
+Heavily modified/simplified by Alessandro Carcione 2020 for ELRS project
 */
 
 #include "SX1280_Regs.h"

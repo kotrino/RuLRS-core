@@ -7,6 +7,8 @@
 Telemetry telemetry;
 uint32_t ChannelData[CRSF_NUM_CHANNELS];      // Current state of channels, CRSF format
 
+GENERIC_CRC8 crsf_crc(CRSF_CRC_POLY);  // Локальный объект
+
 int sendData(uint8_t *data, int length)
 {
     for(int i = 0; i < length; i++)
