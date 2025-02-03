@@ -1,7 +1,5 @@
 #pragma once
-#define TARGET_NATIVE  // Определяем что это нативная сборка
-
-#if !defined TARGET_NATIVE && !defined UNIT_TEST
+#if !defined TARGET_NATIVE
 #include <Arduino.h>
 #endif
 

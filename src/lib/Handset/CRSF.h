@@ -48,9 +48,6 @@ private:
 private:
     static uint8_t MspData[RULRS_MSP_BUFFER];  // Буфер для MSP данных
     static uint8_t MspDataLength;              // Длина MSP данных
-
-public:
-    static uint16_t ChannelData[16]; // 16 каналов для управления джойстиком
 };
 
 extern GENERIC_CRC8 crsf_crc;

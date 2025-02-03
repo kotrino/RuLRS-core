@@ -8,35 +8,9 @@
 #include <algorithm>
 
 #include <stdio.h>
-#include <math.h>
-
-#ifdef _WIN32
-#include <windows.h>
-#include <time.h>
-
-// Замена gettimeofday для Windows
-struct timeval {
-    long tv_sec;
-    long tv_usec;
-};
-
-inline int gettimeofday(struct timeval* tp, void* tzp) {
-    FILETIME ft;
-    GetSystemTimeAsFileTime(&ft);
-    uint64_t tt = ((uint64_t)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
-    tt /= 10;
-    tt -= 11644473600000000ULL;
-    tp->tv_sec = tt / 1000000;
-    tp->tv_usec = tt % 1000000;
-    return 0;
-}
-
-#define delay(ms) Sleep(ms)
-#else
-#include <sys/time.h>
 #include <unistd.h>
-#define delay(ms) usleep(ms * 1000)
-#endif
+#include <math.h>
+#include <sys/time.h>
 
 #define DEVICE_NAME "testing"
 #define RADIO_SX128X 1
