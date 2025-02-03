@@ -7,7 +7,7 @@ jobs:
 
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v4
-
+    
     - name: Checkout
       uses: actions/checkout@v4
 
@@ -218,9 +218,3 @@ jobs:
             echo "Not overwriting already existing artifact at $GITHUB_SHA"
             exit 1
           fi
-
-    - name: Debug paths
-      run: |
-        pwd
-        ls -la
-        echo $GITHUB_WORKSPACE
