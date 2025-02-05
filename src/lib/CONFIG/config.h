@@ -246,7 +246,7 @@ public:
     RxConfig();
 
     void Load();
-    void Commit();
+    uint32_t Commit();
 
     // Getters
     bool     GetIsBound() const;
@@ -310,10 +310,11 @@ private:
     void UpgradeEepromV5();
     void UpgradeEepromV6();
     void UpgradeEepromV7V8();
+    void UpgradeEepromV9();
 
     rx_config_t m_config;
     RULRS_EEPROM *m_eeprom;
-    bool        m_modified;
+    uint32_t        m_modified;
 };
 
 extern RxConfig config;
