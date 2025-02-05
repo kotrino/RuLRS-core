@@ -170,11 +170,12 @@ private:
 #if !defined(PLATFORM_ESP32)
     void UpgradeEepromV5ToV6();
     void UpgradeEepromV6ToV7();
+    void UpgradeEepromV7ToV8();
 #endif
 
     tx_config_t m_config;
     RULRS_EEPROM *m_eeprom;
-    uint8_t     m_modified;
+    uint32_t     m_modified;
     model_config_t *m_model;
     uint8_t     m_modelId;
 #if defined(PLATFORM_ESP32)
