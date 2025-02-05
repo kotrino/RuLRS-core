@@ -58,14 +58,14 @@ def bf_passthrough_init(port, requestedBaudrate):
         raise PassthroughEnabled("No CLI available. Already in passthrough mode?, If this fails reboot FC and try again!")
 
     serial_check = []
-    if not _validate_serialrx(rl, "serialrx_provider", ["CRSF", "RULRS"]):
+    if not _validate_serialrx(rl, "serialrx_provider", ["CRSF", "ELRS"]):
         serial_check.append("Serial Receiver Protocol is not set to CRSF! Hint: set serialrx_provider = CRSF")
     if not _validate_serialrx(rl, "serialrx_inverted", "OFF"):
         serial_check.append("Serial Receiver UART is inverted! Hint: set serialrx_inverted = OFF")
     if not _validate_serialrx(rl, "serialrx_halfduplex", ["OFF", "AUTO"]):
         serial_check.append("Serial Receiver UART is not in full duplex! Hint: set serialrx_halfduplex = OFF")
     if _validate_serialrx(rl, "rx_spi_protocol", "RULRS" ) and serial_check:
-        serial_check = [ "RuLRS SPI RX detected\n\nUpdate via betaflight to flash your RX\nhttps://www.rulrs.org/2.0/hardware/spi-receivers/" ]
+        serial_check = [ "ELRS SPI RX detected\n\nUpdate via betaflight to flash your RX\nhttps://www.expresslrs.org/2.0/hardware/spi-receivers/" ]
 
     if serial_check:
         error = "\n\n [ERROR] Invalid serial RX configuration detected:\n"

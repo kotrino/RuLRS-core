@@ -359,7 +359,7 @@ bool luaHandleUpdateParameter()
 #ifdef TARGET_TX
         DBGVLN("RULRS status request");
         updateRulrsFlags();
-        sendRulrsstatus();
+        sendRuLRSstatus();
       } else if (parameterIndex == 0x2E) {
         luaSupressCriticalErrors();
 #endif

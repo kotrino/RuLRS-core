@@ -123,7 +123,7 @@ struct luaItem_folder {
     char* dyn_name;
 } PACKED;
 
-struct tagLuaElrsParams {
+struct tagLuaRulrsParams {
     uint8_t pktsBad;
     uint16_t pktsGood; // Big-Endian
     uint8_t flags;

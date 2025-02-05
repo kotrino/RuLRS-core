@@ -8,7 +8,7 @@
 
 // Определения для идентификации устройств
 #define SERIAL_ELRS     0x454C5253  // 'ELRS' - серийный номер для ELRS
-#define SERIAL_RULRS    0x524C5253  // 'RLRS' - серийный номер для RuLRS
+#define SERIAL_RULRS    0x454C5253  // 0x524C5253'RLRS' - серийный номер для RuLRS
 
 // Перечисление типов устройств
 enum device_type_e {

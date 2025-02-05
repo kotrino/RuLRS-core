@@ -767,17 +767,4 @@ bool CRSFHandset::UARTwdt()
     return retval;
 }
 
-// Здесь происходит обработка входящих данных с джойстика
-void CRSFHandset::handleCrsfPacket(uint8_t *packet, uint8_t length) {
-    switch (packet[0]) {
-        case CRSF_FRAMETYPE_RC_CHANNELS_PACKED:
-            // Обработка каналов управления джойстика
-            break;
-        case CRSF_FRAMETYPE_LINK_STATISTICS:
-            // Обработка статистики соединения
-            break;
-        // ...
-    }
-}
-
 #endif // CRSF_TX_MODULE

@@ -43,7 +43,7 @@ ESP32S3LedDriver::~ESP32S3LedDriver()
 void ESP32S3LedDriver::Begin()
 {
     i2s_config_t i2s_config = {
-        .mode = i2s_mode_t(I2S_MODE_main | I2S_MODE_TX),
+        .mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_TX),
         .sample_rate = SAMPLE_RATE,
         .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
         .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,

@@ -70,7 +70,7 @@ void CRSF::GetDeviceInformation(uint8_t *frame, uint8_t fieldCount)
     // Пакет начинается с имени устройства
     memcpy(frame + sizeof(crsf_ext_header_t), device_name, size);
     // Затем следует информация об устройстве
-    device->serialNo = htobe32(deviceType == DEVICE_TYPE_RULRS ? SERIAL_RULRS : SERIAL_ELRS);
+    device->serialNo = htobe32(0x454C5253);// ['E', 'L', 'R', 'S'], seen [0x00, 0x0a, 0xe7, 0xc6] // "Serial 177-714694
     device->hardwareVer = 0; // не используется в данный момент [ 0x00, 0x0b, 0x10, 0x01 ] // "Hardware: V 1.01" / "Bootloader: V 3.06"
     device->softwareVer = htobe32(VersionStrToU32(version)); // версия прошивки [ 0x00, 0x00, 0x05, 0x0f ] // "Firmware: V 5.15"
     device->fieldCnt = fieldCount;

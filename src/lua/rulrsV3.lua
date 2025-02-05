@@ -404,7 +404,7 @@ local function parseDeviceInfoMessage(data)
   end
   if deviceId == id then
     deviceName = newName
-    deviceIsRULRS_TX = (ALLOWED_SERIAL_NUMBERS[fieldGetValue(data,offset,4)] and (deviceId == 0xEE)) or nil -- SerialNumber and ID is TX module
+    deviceIsRULRS_TX = ((fieldGetValue(data,offset,4) = 0x454C5253) and (deviceId == 0xEE)) or nil -- SerialNumber and ID is TX module
     local newFieldCount = data[offset+12]
     if newFieldCount ~= fields_count or newFieldCount == 0 then
       fields_count = newFieldCount
