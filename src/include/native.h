@@ -15,6 +15,10 @@
 #define DEVICE_NAME "testing"
 #define RADIO_SX128X 1
 
+// Определения для тестов SX127x
+#define POWER_OUTPUT_VALUES2 nullptr
+#define OPT_USE_SX1276_RFO_HF false
+
 // fake pin definitions to satisfy the SX1280 library
 #define GPIO_PIN_BUSY UNDEF_PIN
 #define GPIO_PIN_NSS_2 UNDEF_PIN
