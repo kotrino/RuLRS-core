@@ -112,7 +112,7 @@ typedef enum : uint8_t
     RATE_FSK_2G4_250HZ_DVDA,
     RATE_FSK_2G4_500HZ_DVDA,
     RATE_FSK_2G4_1000HZ,
-    
+
     RATE_LORA_DUAL_100HZ_8CH = 100,
     RATE_LORA_DUAL_150HZ,
 } rulrs_RFrates_e;

@@ -362,6 +362,9 @@ void disableMspVtx(void)
 static bool initialize()
 {
     return OPT_HAS_VTX_SPI;
+    {
+        mspState = GET_VTX_TABLE_SIZE;
+    }
 }
 
 static int start()

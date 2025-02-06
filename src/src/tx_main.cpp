@@ -1336,6 +1336,9 @@ static void setupSerial()
   }
 #else
   TxUSB = new NullStream();
+  // UNUSED(portConflict);
+  // UNUSED(rxPin);
+  // UNUSED(txPin);
 #endif
 }
 
@@ -1385,8 +1388,15 @@ static void setupBindingFromConfig()
   }
   else
   {
-#if defined(PLATFORM_ESP32)
+#ifdef PLATFORM_ESP32
     esp_read_mac(UID, ESP_MAC_WIFI_STA);
+#elif PLATFORM_STM32
+    UID[0] = (uint8_t)HAL_GetUIDw0();
+    UID[1] = (uint8_t)(HAL_GetUIDw0() >> 8);
+    UID[2] = (uint8_t)HAL_GetUIDw1();
+    UID[3] = (uint8_t)(HAL_GetUIDw1() >> 8);
+    UID[4] = (uint8_t)HAL_GetUIDw2();
+    UID[5] = (uint8_t)(HAL_GetUIDw2() >> 8);
 #else
     wifi_get_macaddr(STATION_IF, UID);
 #endif
@@ -1525,10 +1535,12 @@ void loop()
   // Not a device because it must be run on the loop core
   checkBackpackUpdate();
 
-  // If the reboot time is set and the current time is past the reboot time then reboot.
-  if (rebootTime != 0 && now > rebootTime) {
-    ESP.restart();
-  }
+#if defined(PLATFORM_ESP8266) || defined(PLATFORM_ESP32)
+    // If the reboot time is set and the current time is past the reboot time then reboot.
+    if (rebootTime != 0 && now > rebootTime) {
+      ESP.restart();
+    }
+  #endif
 
   executeDeferredFunction(micros());
 

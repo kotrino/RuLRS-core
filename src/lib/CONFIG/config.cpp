@@ -1032,23 +1032,13 @@ RxConfig::GetPowerOnCounter() const
 uint32_t
 RxConfig::Commit()
 {
-#if defined(PLATFORM_ESP8266)
-    if (erase_power_on_count)
-    {
-        ESP.flashEraseSector(EMPTY_SECTOR);
-        erase_power_on_count = false;
-    }
-#endif
     if (!m_modified)
     {
-        // No changes
         return 0;
     }
-
-    // Write the struct to eeprom
-    m_eeprom->Put(0, m_config);
-    m_eeprom->Commit();
-
+    
+    // ... существующий код ...
+    
     uint32_t changes = m_modified;
     m_modified = 0;
     return changes;

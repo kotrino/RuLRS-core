@@ -25,7 +25,7 @@ const char *wifi_ap_password = "rulrs";
 const char *wifi_ap_address = "10.0.0.1";
 
 #if defined(UNIT_TEST)
-char *device_name = DEVICE_NAME;
+char *device_name = const_cast<char*>(DEVICE_NAME);
 char *product_name = (char *)(target_name+4);
 firmware_options_t firmwareOptions;
 #else
@@ -56,13 +56,15 @@ String& getOptions()
     return builtinOptions;
 }
 
-void saveOptions(Stream &stream, bool customised)
+void saveOptions(Stream& strmDst, bool includeDefaults)
 {
     JsonDocument doc;
 
+    // Создаем массив современным способом
+    JsonArray uid = doc["uid"].to<JsonArray>();
+
     if (firmwareOptions.hasUID)
     {
-        JsonArray uid = doc.createNestedArray("uid");
         copyArray(firmwareOptions.uid, sizeof(firmwareOptions.uid), uid);
     }
     if (firmwareOptions.wifi_auto_on_interval != -1)
@@ -86,10 +88,10 @@ void saveOptions(Stream &stream, bool customised)
     #endif
     doc["is-airport"] = firmwareOptions.is_airport;
     doc["domain"] = firmwareOptions.domain;
-    doc["customised"] = customised;
+    doc["customised"] = includeDefaults;
     doc["flash-discriminator"] = firmwareOptions.flash_discriminator;
 
-    serializeJson(doc, stream);
+    serializeJson(doc, strmDst);
 }
 
 void saveOptions()
